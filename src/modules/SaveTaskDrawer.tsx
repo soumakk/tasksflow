@@ -19,6 +19,7 @@ import { useAtomValue, useSetAtom } from 'jotai'
 import { Button } from '../components/ui/button'
 import { MultiSelect } from '../components/widgets/MultiSelect'
 import Select from '../components/widgets/Select'
+import { useEffect } from 'react'
 
 interface ITaskForm {
 	title: string
@@ -29,7 +30,15 @@ interface ITaskForm {
 	tags: string[]
 }
 
-export default function AddTaskDrawer({ open, onClose }: { open: boolean; onClose: () => void }) {
+export default function SaveTaskDrawer({
+	open,
+	onClose,
+	selectedTask,
+}: {
+	open: boolean
+	onClose: () => void
+	selectedTask?: ITask
+}) {
 	const statusList = useAtomValue(statusAtom)
 	const tagsList = useAtomValue(tagsAtom)
 	const setTasks = useSetAtom(tasksAtom)
@@ -44,20 +53,54 @@ export default function AddTaskDrawer({ open, onClose }: { open: boolean; onClos
 			tags: [],
 		},
 		onSubmit: async ({ value }) => {
-			const newTask: ITask = {
-				due_date: value.due_date,
-				priority: value.priority,
-				title: value.title,
-				description: value?.description ?? null,
-				status_id: value?.status,
-				created_at: dayjs().toISOString(),
-				updated_at: dayjs().toISOString(),
-				id: generateId(),
-				tag_ids: value?.tags,
+			if (selectedTask) {
+				const updatedTask: ITask = {
+					due_date: value.due_date,
+					priority: value.priority,
+					title: value.title,
+					description: value?.description ?? null,
+					status_id: value?.status,
+					created_at: selectedTask?.created_at,
+					updated_at: dayjs().toISOString(),
+					id: selectedTask.id,
+					tag_ids: value?.tags,
+				}
+				setTasks((tasks) =>
+					tasks?.map((task) => {
+						if (task.id === selectedTask.id) return updatedTask
+						else return task
+					})
+				)
+			} else {
+				const newTask: ITask = {
+					due_date: value.due_date,
+					priority: value.priority,
+					title: value.title,
+					description: value?.description ?? null,
+					status_id: value?.status,
+					created_at: dayjs().toISOString(),
+					updated_at: dayjs().toISOString(),
+					id: generateId(),
+					tag_ids: value?.tags,
+				}
+				setTasks((tasks) => [...tasks, newTask])
 			}
-			setTasks((tasks) => [...tasks, newTask])
+			onClose()
 		},
 	})
+
+	useEffect(() => {
+		if (selectedTask) {
+			form.reset({
+				title: selectedTask?.title ?? '',
+				description: selectedTask?.description ?? '',
+				priority: selectedTask?.priority ?? '',
+				status: selectedTask?.status_id ?? '',
+				due_date: selectedTask?.due_date ?? '',
+				tags: selectedTask?.tag_ids ?? [],
+			})
+		}
+	}, [form, selectedTask])
 
 	const statusOptions = statusList?.map((status) => ({
 		label: status.name,
@@ -70,10 +113,17 @@ export default function AddTaskDrawer({ open, onClose }: { open: boolean; onClos
 	}))
 
 	return (
-		<Drawer open={open} onOpenChange={onClose} direction="right">
+		<Drawer
+			open={open}
+			onOpenChange={() => {
+				onClose()
+				form.reset()
+			}}
+			direction="right"
+		>
 			<DrawerContent>
 				<DrawerHeader>
-					<DrawerTitle>New Task</DrawerTitle>
+					<DrawerTitle>{selectedTask ? 'Edit' : 'New'} Task</DrawerTitle>
 				</DrawerHeader>
 
 				<form
@@ -90,6 +140,7 @@ export default function AddTaskDrawer({ open, onClose }: { open: boolean; onClos
 								<div className="flex flex-col gap-2">
 									<Label htmlFor={field.name}>Title</Label>
 									<Input
+										autoFocus
 										id={field.name}
 										name={field.name}
 										value={field.state.value}
@@ -168,7 +219,7 @@ export default function AddTaskDrawer({ open, onClose }: { open: boolean; onClos
 					</div>
 
 					<DrawerFooter>
-						<DrawerClose>
+						<DrawerClose asChild>
 							<Button
 								// disabled={addTaskMutation.isPending}
 								variant="outline"

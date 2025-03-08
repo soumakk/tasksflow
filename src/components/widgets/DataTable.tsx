@@ -1,5 +1,3 @@
-import { ColumnDef, Row, flexRender, getCoreRowModel, useReactTable } from '@tanstack/react-table'
-import { Loader } from 'lucide-react'
 import {
 	Table,
 	TableBody,
@@ -8,25 +6,49 @@ import {
 	TableHeader,
 	TableRow,
 } from '@/components/ui/table'
+import { selectedRowsAtom } from '@/lib/atoms'
+import { ITask } from '@/types/tasks'
+import {
+	ColumnDef,
+	Row,
+	flexRender,
+	getCoreRowModel,
+	getPaginationRowModel,
+	useReactTable,
+} from '@tanstack/react-table'
+import { useAtom } from 'jotai'
+import { Loader } from 'lucide-react'
+import { useState } from 'react'
+import { Button } from '../ui/button'
 
-interface DataTableProps<TData, TValue> {
-	columns: ColumnDef<TData, TValue>[]
-	data: TData[]
+interface DataTableProps {
+	columns: ColumnDef<ITask>[]
+	data: ITask[]
 	isLoading?: boolean
-	onRowClick?: (row: Row<TData>) => void
+	onRowClick?: (row: Row<ITask>) => void
 }
 
-export default function DataTable<TData, TValue>({
-	data,
-	columns,
-	onRowClick,
-	isLoading,
-}: DataTableProps<TData, TValue>) {
+export default function DataTable({ data, columns, onRowClick, isLoading }: DataTableProps) {
+	const [rowSelection, setRowSelection] = useAtom(selectedRowsAtom)
+	const [pagination, setPagination] = useState({
+		pageIndex: 0,
+		pageSize: 20,
+	})
+
 	const table = useReactTable({
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
+		getPaginationRowModel: getPaginationRowModel(),
+		onPaginationChange: setPagination,
+		onRowSelectionChange: setRowSelection,
+		getRowId: (row) => row.id,
+		state: {
+			pagination,
+			rowSelection,
+		},
 	})
+
 	return (
 		<div className="w-full overflow-auto">
 			<Table className="border-b min-w-[500px]">
@@ -79,6 +101,30 @@ export default function DataTable<TData, TValue>({
 					)}
 				</TableBody>
 			</Table>
+
+			<div className="flex items-center justify-end space-x-2 py-4">
+				<div className="flex-1 text-sm text-muted-foreground">
+					{table.getFilteredRowModel().rows.length} task(s) present
+				</div>
+				<div className="space-x-2">
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => table.previousPage()}
+						disabled={!table.getCanPreviousPage()}
+					>
+						Previous
+					</Button>
+					<Button
+						variant="outline"
+						size="sm"
+						onClick={() => table.nextPage()}
+						disabled={!table.getCanNextPage()}
+					>
+						Next
+					</Button>
+				</div>
+			</div>
 		</div>
 	)
 }

@@ -7,6 +7,7 @@ import { Flag } from 'lucide-react'
 import { useMemo } from 'react'
 import { cn, formatDate } from '../lib/utils'
 import { IStatus, ITag, ITask, TaskPriority } from '../types/tasks'
+import { Checkbox } from '@/components/ui/checkbox'
 
 export default function TableView({
 	tasks,
@@ -27,6 +28,30 @@ export default function TableView({
 	const priorityFilter = useAtomValue(priorityFilterAtom)
 
 	const columns: ColumnDef<ITask>[] = [
+		{
+			id: 'select',
+			header: ({ table }) => (
+				<Checkbox
+					checked={Boolean(
+						table.getIsAllPageRowsSelected() ||
+							(table.getIsSomePageRowsSelected() && 'indeterminate')
+					)}
+					onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
+					aria-label="Select all"
+				/>
+			),
+			cell: ({ row }) => (
+				<div className="min-w-6 flex items-center" onClick={(e) => e.stopPropagation()}>
+					<Checkbox
+						checked={row.getIsSelected()}
+						onCheckedChange={(value) => row.toggleSelected(!!value)}
+						aria-label="Select row"
+					/>
+				</div>
+			),
+			enableSorting: false,
+			enableHiding: false,
+		},
 		{
 			accessorKey: 'title',
 			header: 'Title',

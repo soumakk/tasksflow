@@ -1,18 +1,23 @@
+import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { MultiDropdown } from '@/components/widgets/MultiDropdown'
 import {
 	priorityFilterAtom,
 	searchQueryAtom,
+	selectedRowsAtom,
 	statusAtom,
 	statusFilterAtom,
 	tagsAtom,
 	tagsFilterAtom,
+	tasksAtom,
 } from '@/lib/atoms'
 import { PriorityOptions } from '@/lib/data'
-import { useAtom, useAtomValue } from 'jotai'
+import { useAtom, useAtomValue, useSetAtom } from 'jotai'
 import { CircleCheck, Flag, Tag } from 'lucide-react'
+import { isEmpty } from 'radash'
 
 export default function TasksFilters() {
+	const setTasks = useSetAtom(tasksAtom)
 	const statusList = useAtomValue(statusAtom)
 	const tagsList = useAtomValue(tagsAtom)
 
@@ -20,6 +25,7 @@ export default function TasksFilters() {
 	const [statusFilter, setStatusFilter] = useAtom(statusFilterAtom)
 	const [tagsFilter, setTagsFilter] = useAtom(tagsFilterAtom)
 	const [priorityFilter, setPriorityFilter] = useAtom(priorityFilterAtom)
+	const [selectedRows, setSelectedRows] = useAtom(selectedRowsAtom)
 
 	const statusOptions = statusList?.map((status) => ({
 		label: status.name,
@@ -30,6 +36,19 @@ export default function TasksFilters() {
 		label: tag.name,
 		value: tag.id,
 	}))
+
+	function deleteRows() {
+		setTasks((tasks) => tasks?.filter((task) => !Object.keys(selectedRows)?.includes(task.id)))
+		setSelectedRows({})
+	}
+
+	if (!isEmpty(selectedRows)) {
+		return (
+			<Button size="sm" variant="outline" onClick={deleteRows}>
+				Delete {Object.keys(selectedRows).length} row(s)
+			</Button>
+		)
+	}
 
 	return (
 		<div className="flex items-center gap-3">
