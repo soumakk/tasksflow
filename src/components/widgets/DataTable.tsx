@@ -32,7 +32,7 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 	const [rowSelection, setRowSelection] = useAtom(selectedRowsAtom)
 	const [pagination, setPagination] = useState({
 		pageIndex: 0,
-		pageSize: 20,
+		pageSize: 10,
 	})
 
 	const table = useReactTable({
@@ -43,6 +43,8 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 		onPaginationChange: setPagination,
 		onRowSelectionChange: setRowSelection,
 		getRowId: (row) => row.id,
+		columnResizeMode: 'onChange',
+		columnResizeDirection: 'ltr',
 		state: {
 			pagination,
 			rowSelection,
@@ -51,18 +53,46 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 
 	return (
 		<div className="w-full overflow-auto">
-			<Table className="border-b min-w-[500px]">
+			<Table
+				className="border-b"
+				{...{
+					style: {
+						width: table.getCenterTotalSize(),
+					},
+				}}
+			>
 				<TableHeader className="">
 					{table.getHeaderGroups().map((headerGroup) => (
 						<TableRow key={headerGroup.id}>
 							{headerGroup.headers.map((header) => (
-								<TableHead key={header.id} className="text-xs uppercase h-8">
+								<TableHead
+									key={header.id}
+									className="text-xs uppercase h-8 relative"
+									style={{
+										width: header.getSize(),
+									}}
+								>
 									{header.isPlaceholder
 										? null
 										: flexRender(
 												header.column.columnDef.header,
 												header.getContext()
 										  )}
+
+									{header.column.getCanResize() && (
+										<div
+											{...{
+												onDoubleClick: () => header.column.resetSize(),
+												onMouseDown: header.getResizeHandler(),
+												onTouchStart: header.getResizeHandler(),
+												className: `resizer ${
+													header.column.getIsResizing()
+														? 'isResizing'
+														: ''
+												}`,
+											}}
+										/>
+									)}
 								</TableHead>
 							))}
 						</TableRow>

@@ -51,16 +51,26 @@ export default function TableView({
 			),
 			enableSorting: false,
 			enableHiding: false,
+			size: 50,
+			enableResizing: false,
 		},
 		{
 			accessorKey: 'title',
 			header: 'Title',
-			size: 500,
+			cell: ({ getValue }) => {
+				const value = getValue() as string
+				if (!value) return null
+				return <p className="whitespace-nowrap">{value}</p>
+			},
 		},
 		{
 			accessorKey: 'description',
 			header: 'Description',
-			size: 200,
+			cell: ({ getValue }) => {
+				const value = getValue() as string
+				if (!value) return null
+				return <p className="whitespace-nowrap">{value}</p>
+			},
 		},
 		{
 			accessorKey: 'priority',
@@ -82,7 +92,6 @@ export default function TableView({
 					</p>
 				)
 			},
-			size: 50,
 		},
 		{
 			accessorKey: 'status_id',
@@ -129,7 +138,6 @@ export default function TableView({
 				if (!date) return null
 				return <p className="whitespace-nowrap">{formatDate(date)}</p>
 			},
-			size: 100,
 		},
 		{
 			accessorKey: 'updated_at',
@@ -143,7 +151,6 @@ export default function TableView({
 					</p>
 				)
 			},
-			size: 100,
 		},
 	]
 
