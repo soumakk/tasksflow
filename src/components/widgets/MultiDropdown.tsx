@@ -31,7 +31,7 @@ export function MultiDropdown(props: {
 			<PopoverTrigger asChild>
 				<Button
 					id={id}
-					variant="outline"
+					variant="ghost"
 					size="sm"
 					role="combobox"
 					aria-expanded={open}

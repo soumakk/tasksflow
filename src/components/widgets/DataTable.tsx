@@ -43,8 +43,8 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 		onPaginationChange: setPagination,
 		onRowSelectionChange: setRowSelection,
 		getRowId: (row) => row.id,
-		columnResizeMode: 'onChange',
-		columnResizeDirection: 'ltr',
+		// columnResizeMode: 'onChange',
+		// columnResizeDirection: 'ltr',
 		state: {
 			pagination,
 			rowSelection,
@@ -57,7 +57,7 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 				className="border-b"
 				{...{
 					style: {
-						width: table.getCenterTotalSize(),
+						// width: table.getCenterTotalSize(),
 					},
 				}}
 			>
@@ -79,7 +79,7 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 												header.getContext()
 										  )}
 
-									{header.column.getCanResize() && (
+									{/* {header.column.getCanResize() && (
 										<div
 											{...{
 												onDoubleClick: () => header.column.resetSize(),
@@ -92,7 +92,7 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 												}`,
 											}}
 										/>
-									)}
+									)} */}
 								</TableHead>
 							))}
 						</TableRow>
@@ -132,7 +132,7 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 				</TableBody>
 			</Table>
 
-			<div className="flex items-center justify-end space-x-2 py-4">
+			{/* <div className="flex items-center justify-end space-x-2 py-4">
 				<div className="flex-1 text-sm text-muted-foreground">
 					{table.getFilteredRowModel().rows.length} task(s) present
 				</div>
@@ -154,7 +154,7 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 						Next
 					</Button>
 				</div>
-			</div>
+			</div> */}
 		</div>
 	)
 }

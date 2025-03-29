@@ -3,10 +3,10 @@ import { cn } from '@/lib/utils'
 
 const Table = React.forwardRef<HTMLTableElement, React.HTMLAttributes<HTMLTableElement>>(
 	({ className, ...props }, ref) => (
-		<div className="relative w-full overflow-auto rounded-lg border border-border">
+		<div className="relative w-full overflow-auto border border-border">
 			<table
 				ref={ref}
-				className={cn('w-full caption-bottom text-sm ', className)}
+				className={cn('w-full caption-bottom text-xs ', className)}
 				{...props}
 			/>
 		</div>
@@ -66,7 +66,7 @@ const TableHead = React.forwardRef<
 	<th
 		ref={ref}
 		className={cn(
-			'h-9 px-3 text-left text-xs uppercase bg-muted align-middle font-semibold text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+			'h-8 px-3 text-left text-xs uppercase bg-muted align-middle font-semibold text-muted-foreground [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
 			className
 		)}
 		{...props}
@@ -81,7 +81,7 @@ const TableCell = React.forwardRef<
 	<td
 		ref={ref}
 		className={cn(
-			'py-2 px-3 align-middle not-last:border-r border-border [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
+			'py-1.5 px-3 align-middle not-last:border-r border-border [&:has([role=checkbox])]:pr-0 [&>[role=checkbox]]:translate-y-[2px]',
 			className
 		)}
 		{...props}

@@ -16,25 +16,37 @@ function App() {
 
 	return (
 		<>
-			<div className="max-w-7xl mx-auto px-4 lg:px-8">
-				<div className="flex justify-between items-center my-4">
-					<h1 className="font-medium text-2xl">Tasks</h1>
-					<Button onClick={() => setSaveDrawerOpen(true)}>Add task</Button>
-				</div>
+			<div className="">
+				<div className="">
+					<div className="flex justify-between items-center p-4 border-b border-border">
+						<h1 className="font-medium text-xl">Tasks</h1>
+						{/* <input
+							type="text"
+							defaultValue="Tasks"
+							className="font-medium text-xl outline-none"
+						/> */}
+					</div>
 
-				<div className="flex my-4">
-					<TasksFilters />
+					<div className="flex px-4 py-2">
+						<TasksFilters />
+					</div>
 				</div>
 
 				<TableView
 					tasks={tasksList}
 					statusList={statusList}
 					tagsList={tagsList}
-					onViewTask={(task) => {
-						setSelectedTaskToView(task)
-						setSaveDrawerOpen(true)
-					}}
+					// onViewTask={(task) => {
+					// 	setSelectedTaskToView(task)
+					// 	setSaveDrawerOpen(true)
+					// }}
 				/>
+			</div>
+
+			<div className="fixed bottom-8 right-8">
+				<Button className="rounded-full" onClick={() => setSaveDrawerOpen(true)}>
+					Add task
+				</Button>
 			</div>
 
 			<SaveTaskDrawer

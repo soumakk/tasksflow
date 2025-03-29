@@ -4,7 +4,7 @@ import { priorityFilterAtom, searchQueryAtom, statusFilterAtom, tagsFilterAtom }
 import { ColumnDef } from '@tanstack/react-table'
 import { useAtomValue } from 'jotai'
 import { Flag } from 'lucide-react'
-import { useMemo } from 'react'
+import { useMemo, useState } from 'react'
 import { cn, formatDate } from '../lib/utils'
 import { IStatus, ITag, ITask, TaskPriority } from '../types/tasks'
 import { Checkbox } from '@/components/ui/checkbox'
@@ -18,7 +18,7 @@ export default function TableView({
 }: {
 	tasks: ITask[]
 	isTasksLoading?: boolean
-	onViewTask: (task: ITask) => void
+	onViewTask?: (task: ITask) => void
 	statusList: IStatus[]
 	tagsList: ITag[]
 }) {
@@ -26,6 +26,7 @@ export default function TableView({
 	const statusFilter = useAtomValue(statusFilterAtom)
 	const tagsFilter = useAtomValue(tagsFilterAtom)
 	const priorityFilter = useAtomValue(priorityFilterAtom)
+	const [editingCell, setEditingCell] = useState(null)
 
 	const columns: ColumnDef<ITask>[] = [
 		{
@@ -57,11 +58,20 @@ export default function TableView({
 		{
 			accessorKey: 'title',
 			header: 'Title',
-			cell: ({ getValue }) => {
+			cell: ({ getValue, row, column }) => {
+				const isEditing = editingCell?.row === row?.id && editingCell?.col === column?.id
 				const value = getValue() as string
 				if (!value) return null
-				return <p className="whitespace-nowrap">{value}</p>
+				if (isEditing) {
+					return <input defaultValue={value} onBlur={() => setEditingCell(null)} />
+				}
+				return (
+					<div onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}>
+						<p className="whitespace-nowrap">{value}</p>
+					</div>
+				)
 			},
+			size: 200,
 		},
 		{
 			accessorKey: 'description',
@@ -71,6 +81,7 @@ export default function TableView({
 				if (!value) return null
 				return <p className="whitespace-nowrap">{value}</p>
 			},
+			size: 300,
 		},
 		{
 			accessorKey: 'priority',
@@ -79,7 +90,7 @@ export default function TableView({
 				const priority = getValue() as TaskPriority
 				if (!priority) return null
 				return (
-					<p className="capitalize text-sm flex items-center gap-2">
+					<p className="capitalize flex items-center gap-2">
 						<Flag
 							className={cn('h-4 w-4', {
 								'stroke-red-500': priority === TaskPriority.Urgent,
@@ -102,9 +113,10 @@ export default function TableView({
 				const statusInfo = statusList?.find((opt) => opt.id === statusId)
 				return statusInfo ? (
 					<Badge
-						className="text-black"
+						className="text-black font-medium rounded-full"
 						style={{
-							backgroundColor: statusInfo?.color,
+							color: statusInfo?.color,
+							backgroundColor: `${statusInfo?.color}1a`,
 						}}
 					>
 						{statusInfo?.name}
@@ -122,7 +134,7 @@ export default function TableView({
 				return tags ? (
 					<div className="flex gap-1">
 						{tags?.slice(0, 3)?.map((tag) => (
-							<Badge variant="outline" key={tag.id}>
+							<Badge className="rounded-full" key={tag.id}>
 								{tag.name}
 							</Badge>
 						))}
@@ -183,7 +195,7 @@ export default function TableView({
 			columns={columns}
 			data={filteredTasks}
 			isLoading={isTasksLoading}
-			onRowClick={(row) => onViewTask(row.original)}
+			onRowClick={(row) => onViewTask?.(row.original)}
 		/>
 	)
 }
