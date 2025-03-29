@@ -1,23 +1,22 @@
 import { Badge } from '@/components/ui/badge'
+import { Checkbox } from '@/components/ui/checkbox'
 import DataTable from '@/components/widgets/DataTable'
 import { priorityFilterAtom, searchQueryAtom, statusFilterAtom, tagsFilterAtom } from '@/lib/atoms'
+import { db } from '@/lib/db'
 import { ColumnDef } from '@tanstack/react-table'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { useAtomValue } from 'jotai'
 import { Flag } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { cn, formatDate } from '../lib/utils'
 import { IStatus, ITag, ITask, TaskPriority } from '../types/tasks'
-import { Checkbox } from '@/components/ui/checkbox'
+import EditableCell from './EditableCell'
 
 export default function TableView({
-	tasks,
-	isTasksLoading,
 	onViewTask,
 	statusList,
 	tagsList,
 }: {
-	tasks: ITask[]
-	isTasksLoading?: boolean
 	onViewTask?: (task: ITask) => void
 	statusList: IStatus[]
 	tagsList: ITag[]
@@ -27,6 +26,14 @@ export default function TableView({
 	const tagsFilter = useAtomValue(tagsFilterAtom)
 	const priorityFilter = useAtomValue(priorityFilterAtom)
 	const [editingCell, setEditingCell] = useState(null)
+	const tasks = useLiveQuery(() => db.tasks.toArray())
+
+	async function updateCell(id: string, key: string, value: string) {
+		const task = tasks.find((t) => t.id === id)
+		await db.tasks.update(id, { ...task, [key]: value })
+	}
+
+	console.log(tasks)
 
 	const columns: ColumnDef<ITask>[] = [
 		{
@@ -61,12 +68,22 @@ export default function TableView({
 			cell: ({ getValue, row, column }) => {
 				const isEditing = editingCell?.row === row?.id && editingCell?.col === column?.id
 				const value = getValue() as string
-				if (!value) return null
 				if (isEditing) {
-					return <input defaultValue={value} onBlur={() => setEditingCell(null)} />
+					return (
+						<EditableCell
+							onSave={(value) => {
+								updateCell(row?.id, column?.id, value)
+								setEditingCell(null)
+							}}
+							initialValue={value}
+						/>
+					)
 				}
 				return (
-					<div onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}>
+					<div
+						className="h-full w-full px-3 flex items-center"
+						onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
+					>
 						<p className="whitespace-nowrap">{value}</p>
 					</div>
 				)
@@ -76,10 +93,16 @@ export default function TableView({
 		{
 			accessorKey: 'description',
 			header: 'Description',
-			cell: ({ getValue }) => {
+			cell: ({ getValue, row, column }) => {
 				const value = getValue() as string
-				if (!value) return null
-				return <p className="whitespace-nowrap">{value}</p>
+				return (
+					<div
+						className="h-full w-full px-3 flex items-center"
+						onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
+					>
+						<p className="whitespace-nowrap">{value}</p>
+					</div>
+				)
 			},
 			size: 300,
 		},
@@ -167,7 +190,7 @@ export default function TableView({
 	]
 
 	const filteredTasks = useMemo(() => {
-		let temp = [...tasks]
+		let temp = tasks?.slice()
 
 		if (searchQuery) {
 			temp = temp?.filter((task) =>
@@ -190,11 +213,12 @@ export default function TableView({
 		return temp
 	}, [searchQuery, tasks, statusFilter, priorityFilter, tagsFilter])
 
+	if (!tasks) return null
+
 	return (
 		<DataTable
 			columns={columns}
 			data={filteredTasks}
-			isLoading={isTasksLoading}
 			onRowClick={(row) => onViewTask?.(row.original)}
 		/>
 	)

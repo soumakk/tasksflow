@@ -22,6 +22,8 @@
 		"cmdk": "^1.0.4",
 		"date-fns": "^4.1.0",
 		"dayjs": "^1.11.13",
+		"dexie": "^4.0.11",
+		"dexie-react-hooks": "^1.1.7",
 		"jotai": "^2.12.1",
 		"lucide-react": "^0.479.0",
 		"nanoid": "^5.1.3",

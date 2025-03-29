@@ -20,6 +20,7 @@ import { Button } from '../components/ui/button'
 import { MultiSelect } from '../components/widgets/MultiSelect'
 import Select from '../components/widgets/Select'
 import { useEffect } from 'react'
+import { db } from '@/lib/db'
 
 interface ITaskForm {
 	title: string
@@ -83,7 +84,8 @@ export default function SaveTaskDrawer({
 					id: generateId(),
 					tag_ids: value?.tags,
 				}
-				setTasks((tasks) => [...tasks, newTask])
+				await db.tasks.add(newTask)
+				// setTasks((tasks) => [...tasks, newTask])
 			}
 			onClose()
 		},

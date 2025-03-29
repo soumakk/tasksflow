@@ -39,20 +39,20 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 		data,
 		columns,
 		getCoreRowModel: getCoreRowModel(),
-		getPaginationRowModel: getPaginationRowModel(),
-		onPaginationChange: setPagination,
+		// getPaginationRowModel: getPaginationRowModel(),
+		// onPaginationChange: setPagination,
 		onRowSelectionChange: setRowSelection,
 		getRowId: (row) => row.id,
 		// columnResizeMode: 'onChange',
 		// columnResizeDirection: 'ltr',
 		state: {
-			pagination,
+			// pagination,
 			rowSelection,
 		},
 	})
 
 	return (
-		<div className="w-full overflow-auto">
+		<div className="w-full overflow-auto flex-1">
 			<Table
 				className="border-b"
 				{...{
