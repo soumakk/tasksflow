@@ -67,7 +67,7 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 							{headerGroup.headers.map((header) => (
 								<TableHead
 									key={header.id}
-									className="text-xs uppercase h-8 relative"
+									className="text-xs h-8 relative"
 									style={{
 										width: header.getSize(),
 									}}

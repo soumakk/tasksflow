@@ -1,18 +1,16 @@
 import { Badge } from '@/components/ui/badge'
-import { Checkbox } from '@/components/ui/checkbox'
 import DataTable from '@/components/widgets/DataTable'
 import { priorityFilterAtom, searchQueryAtom, statusFilterAtom, tagsFilterAtom } from '@/lib/atoms'
 import { db } from '@/lib/db'
 import { ColumnDef } from '@tanstack/react-table'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useAtomValue } from 'jotai'
-import { Flag } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { cn, formatDate } from '../lib/utils'
+import { formatDate } from '../lib/utils'
 import { IStatus, ITag, ITask, TaskPriority } from '../types/tasks'
 import EditableCell from './EditableCell'
-import Select from '@/components/widgets/Select'
 import PriorityEditField from './PriorityEditField'
+import StatusEditField from './StatusEditField'
 
 export default function TableView({
 	onViewTask,
@@ -84,7 +82,7 @@ export default function TableView({
 				return (
 					<div
 						className="h-full w-full px-3 flex items-center"
-						onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
+						onClick={() => setEditingCell({ row: row.id, col: column.id })}
 					>
 						<p className="whitespace-nowrap">{value}</p>
 					</div>
@@ -112,7 +110,7 @@ export default function TableView({
 				return (
 					<div
 						className="h-full w-full px-3 flex items-center"
-						onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
+						onClick={() => setEditingCell({ row: row.id, col: column.id })}
 					>
 						<p className="whitespace-nowrap">{value}</p>
 					</div>
@@ -125,36 +123,15 @@ export default function TableView({
 			header: 'Priority',
 			cell: ({ getValue, row, column }) => {
 				const priority = getValue() as TaskPriority
-				const isEditing = editingCell?.row === row?.id && editingCell?.col === column?.id
 				if (!priority) return null
-				if (isEditing) {
-					return (
-						<PriorityEditField
-							onSave={(value) => {
-								updateCell(row?.id, column?.id, value)
-								setEditingCell(null)
-							}}
-							initialValue={priority}
-						/>
-					)
-				}
 				return (
-					<div
-						className="h-full w-full px-3 flex items-center"
-						onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
-					>
-						<p className="capitalize flex items-center gap-2">
-							<Flag
-								className={cn('h-4 w-4', {
-									'stroke-red-500': priority === TaskPriority.Urgent,
-									'stroke-yellow-500': priority === TaskPriority.High,
-									'stroke-blue-500': priority === TaskPriority.Normal,
-									'stroke-gray-500': priority === TaskPriority.Low,
-								})}
-							/>
-							{priority}
-						</p>
-					</div>
+					<PriorityEditField
+						onSave={(value) => {
+							updateCell(row?.id, column?.id, value)
+							setEditingCell(null)
+						}}
+						initialValue={priority}
+					/>
 				)
 			},
 		},
@@ -164,23 +141,15 @@ export default function TableView({
 			cell: ({ getValue, row, column }) => {
 				const statusId = getValue() as string
 				if (!statusId) return null
-				const statusInfo = statusList?.find((opt) => opt.id === statusId)
-				return statusInfo ? (
-					<div
-						className="h-full w-full px-3 flex items-center"
-						onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
-					>
-						<Badge
-							className="text-black font-medium rounded-full"
-							style={{
-								color: statusInfo?.color,
-								backgroundColor: `${statusInfo?.color}1a`,
-							}}
-						>
-							{statusInfo?.name}
-						</Badge>
-					</div>
-				) : null
+				return (
+					<StatusEditField
+						onSave={(value) => {
+							updateCell(row?.id, column?.id, value)
+							setEditingCell(null)
+						}}
+						initialValue={statusId}
+					/>
+				)
 			},
 		},
 		// {
