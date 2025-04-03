@@ -8,9 +8,13 @@ import { useAtomValue } from 'jotai'
 import { useMemo, useState } from 'react'
 import { formatDate } from '../lib/utils'
 import { IStatus, ITag, ITask, TaskPriority } from '../types/tasks'
-import EditableCell from './EditableCell'
-import PriorityEditField from './PriorityEditField'
-import StatusEditField from './StatusEditField'
+import TextEditField from './fields/TextEditField'
+import PriorityEditField from './fields/PriorityEditField'
+import StatusEditField from './fields/StatusEditField'
+import dayjs from 'dayjs'
+import DateEditField from './fields/DateEditField'
+import { Checkbox } from '@/components/ui/checkbox'
+import { Trash, Trash2 } from 'lucide-react'
 
 export default function TableView({
 	onViewTask,
@@ -30,7 +34,11 @@ export default function TableView({
 
 	async function updateCell(id: string, key: string, value: string) {
 		const task = tasks.find((t) => t.id === id)
-		await db.tasks.update(id, { ...task, [key]: value })
+		await db.tasks.update(id, { ...task, [key]: value, updated_at: dayjs().toISOString() })
+	}
+
+	async function deleteRow(id: string) {
+		await db.tasks.delete(id)
 	}
 
 	const columns: ColumnDef<ITask>[] = [
@@ -47,7 +55,7 @@ export default function TableView({
 		// 		/>
 		// 	),
 		// 	cell: ({ row }) => (
-		// 		<div className="min-w-6 flex items-center" onClick={(e) => e.stopPropagation()}>
+		// 		<div className="px-3  flex items-center" onClick={(e) => e.stopPropagation()}>
 		// 			<Checkbox
 		// 				checked={row.getIsSelected()}
 		// 				onCheckedChange={(value) => row.toggleSelected(!!value)}
@@ -61,6 +69,21 @@ export default function TableView({
 		// 	enableResizing: false,
 		// },
 		{
+			id: 'action',
+			header: () => null,
+			cell: ({ row }) => {
+				return (
+					<div className="h-full w-full items-center justify-center hidden group-hover/row:flex">
+						<Trash2
+							className="h-3.5 w-3.5 text-destructive"
+							onClick={() => deleteRow(row?.id)}
+						/>
+					</div>
+				)
+			},
+			size: 40,
+		},
+		{
 			accessorKey: 'title',
 			header: 'Title',
 			cell: ({ getValue, row, column }) => {
@@ -68,7 +91,7 @@ export default function TableView({
 				const value = getValue() as string
 				if (isEditing) {
 					return (
-						<EditableCell
+						<TextEditField
 							onSave={(value) => {
 								updateCell(row?.id, column?.id, value)
 								setEditingCell(null)
@@ -79,14 +102,14 @@ export default function TableView({
 				}
 				return (
 					<div
-						className="h-full w-full px-3 flex items-center"
+						className="h-full w-full px-3 flex items-center cursor-pointer"
 						onClick={() => setEditingCell({ row: row.id, col: column.id })}
 					>
 						<p className="whitespace-nowrap">{value}</p>
 					</div>
 				)
 			},
-			size: 200,
+			size: 300,
 		},
 		{
 			accessorKey: 'description',
@@ -96,7 +119,7 @@ export default function TableView({
 				const value = getValue() as string
 				if (isEditing) {
 					return (
-						<EditableCell
+						<TextEditField
 							onSave={(value) => {
 								updateCell(row?.id, column?.id, value)
 								setEditingCell(null)
@@ -107,7 +130,7 @@ export default function TableView({
 				}
 				return (
 					<div
-						className="h-full w-full px-3 flex items-center"
+						className="h-full w-full px-3 flex items-center cursor-pointer"
 						onClick={() => setEditingCell({ row: row.id, col: column.id })}
 					>
 						<p className="whitespace-nowrap">{value}</p>
@@ -121,7 +144,6 @@ export default function TableView({
 			header: 'Priority',
 			cell: ({ getValue, row, column }) => {
 				const priority = getValue() as TaskPriority
-				if (!priority) return null
 				return (
 					<PriorityEditField
 						onSave={(value) => {
@@ -138,7 +160,6 @@ export default function TableView({
 			header: 'Status',
 			cell: ({ getValue, row, column }) => {
 				const statusId = getValue() as string
-				if (!statusId) return null
 				return (
 					<StatusEditField
 						onSave={(value) => {
@@ -178,14 +199,14 @@ export default function TableView({
 			header: 'Date',
 			cell: ({ getValue, row, column }) => {
 				const date = getValue() as string
-				if (!date) return null
 				return (
-					<div
-						className="h-full w-full px-3 flex items-center"
-						onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
-					>
-						<p className="whitespace-nowrap">{formatDate(date)}</p>
-					</div>
+					<DateEditField
+						initialValue={date}
+						onSave={(value) => {
+							updateCell(row?.id, column?.id, value)
+							setEditingCell(null)
+						}}
+					/>
 				)
 			},
 		},

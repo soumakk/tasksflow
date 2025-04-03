@@ -18,12 +18,17 @@ export default function PriorityEditField({
 }) {
 	const [selected, setSelected] = useState(initialValue)
 	const selectedLabel = PriorityOptions?.find((opt) => opt.value === selected)?.label
+
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
-				<button className="w-full h-full flex items-center gap-2 px-3">
-					<PriorityFlag priority={selected as TaskPriority} />
-					<span>{selectedLabel}</span>
+				<button className="w-full h-full flex items-center gap-2 px-3 cursor-pointer data-[state=open]:outline-2 outline-primary">
+					{selected ? (
+						<>
+							<PriorityFlag priority={selected as TaskPriority} />
+							<span>{selectedLabel}</span>
+						</>
+					) : null}
 				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className="w-auto">

@@ -64,7 +64,7 @@ export default function SaveTaskDrawer({
 					created_at: selectedTask?.created_at,
 					updated_at: dayjs().toISOString(),
 					id: selectedTask.id,
-					tag_ids: value?.tags,
+					tag_ids: value?.tags ?? [],
 				}
 				setTasks((tasks) =>
 					tasks?.map((task) => {
@@ -82,7 +82,7 @@ export default function SaveTaskDrawer({
 					created_at: dayjs().toISOString(),
 					updated_at: dayjs().toISOString(),
 					id: generateId(),
-					tag_ids: value?.tags,
+					tag_ids: value?.tags ?? [],
 				}
 				await db.tasks.add(newTask)
 				// setTasks((tasks) => [...tasks, newTask])
@@ -192,7 +192,7 @@ export default function SaveTaskDrawer({
 								</div>
 							)}
 						</form.Field>
-						<form.Field name="tags">
+						{/* <form.Field name="tags">
 							{(field) => (
 								<div className="flex flex-col gap-2">
 									<Label htmlFor={field.name}>Tags</Label>
@@ -205,7 +205,7 @@ export default function SaveTaskDrawer({
 									/>
 								</div>
 							)}
-						</form.Field>
+						</form.Field> */}
 						<form.Field name="due_date">
 							{(field) => (
 								<div className="flex flex-col gap-2">

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-export default function EditableCell({
+export default function TextEditField({
 	onSave,
 	initialValue,
 }: {
@@ -10,7 +10,7 @@ export default function EditableCell({
 	const [text, setText] = useState(initialValue)
 	return (
 		<input
-			className="h-full w-full px-3 ring ring-primary outline-none"
+			className="h-full w-full px-3 focus:outline-2 outline-primary"
 			defaultValue={initialValue}
 			onBlur={() => onSave(text)}
 			value={text}

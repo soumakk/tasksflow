@@ -54,7 +54,7 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 	return (
 		<div className="w-full overflow-auto flex-1">
 			<Table
-				className="border-b"
+				className=""
 				{...{
 					style: {
 						// width: table.getCenterTotalSize(),

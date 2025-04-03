@@ -19,20 +19,21 @@ export default function StatusEditField({
 	const statusList = useAtomValue(statusAtom)
 	const [selected, setSelected] = useState(initialValue)
 	const statusInfo = statusList?.find((opt) => opt.id === selected)
-
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
-				<button className="w-full h-full flex items-center gap-2 px-3">
-					<Badge
-						className="text-black font-medium rounded-full"
-						style={{
-							color: statusInfo?.color,
-							backgroundColor: `${statusInfo?.color}1a`,
-						}}
-					>
-						{statusInfo?.name}
-					</Badge>
+				<button className="w-full h-full flex items-center gap-2 px-3 cursor-pointer data-[state=open]:outline-2 outline-primary">
+					{selected ? (
+						<Badge
+							className="text-black font-medium rounded-full"
+							style={{
+								color: statusInfo?.color,
+								backgroundColor: `${statusInfo?.color}1a`,
+							}}
+						>
+							{statusInfo?.name}
+						</Badge>
+					) : null}
 				</button>
 			</DropdownMenuTrigger>
 			<DropdownMenuContent className="w-auto">
