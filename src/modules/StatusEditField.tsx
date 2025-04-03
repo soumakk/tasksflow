@@ -38,6 +38,7 @@ export default function StatusEditField({
 			<DropdownMenuContent className="w-auto">
 				{statusList?.map((opt) => (
 					<DropdownMenuItem
+						key={opt.id}
 						onClick={() => {
 							setSelected(opt.id)
 							onSave(opt.id)

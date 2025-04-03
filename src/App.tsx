@@ -4,11 +4,10 @@ import TableView from '@/modules/TableView'
 import { ITask } from '@/types/tasks'
 import { useAtomValue } from 'jotai'
 import { useState } from 'react'
-import { statusAtom, tagsAtom, tasksAtom } from './lib/atoms'
-import TasksFilters from './modules/TasksFilters'
-import { db } from './lib/db'
-import { useLiveQuery } from 'dexie-react-hooks'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
+import { statusAtom, tagsAtom, tasksAtom } from './lib/atoms'
+import Title from './modules/Title'
+import ThemeSwitch from './modules/ThemeSwitch'
 
 function App() {
 	const tasksList = useAtomValue(tasksAtom)
@@ -21,12 +20,9 @@ function App() {
 		<>
 			<div className="relative h-full max-w-5xl mx-auto">
 				<div className="flex justify-between items-center px-4 py-3">
-					<h1 className="font-semibold text-2xl">Tasks</h1>
-					{/* <input
-							type="text"
-							defaultValue="Tasks"
-							className="font-medium text-xl outline-none"
-						/> */}
+					<Title />
+
+					<ThemeSwitch />
 				</div>
 
 				<Tabs defaultValue="account" className="">
@@ -45,7 +41,6 @@ function App() {
 						</Button>
 					</div>
 					<TabsContent value="account">
-						{' '}
 						<TableView
 							statusList={statusList}
 							tagsList={tagsList}

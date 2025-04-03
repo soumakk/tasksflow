@@ -33,8 +33,6 @@ export default function TableView({
 		await db.tasks.update(id, { ...task, [key]: value })
 	}
 
-	console.log(tasks)
-
 	const columns: ColumnDef<ITask>[] = [
 		// {
 		// 	id: 'select',

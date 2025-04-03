@@ -1,5 +1,5 @@
 import { ITask } from '@/types/tasks'
-import Dexie, { EntityTable } from 'dexie'
+import Dexie, { EntityTable, Table } from 'dexie'
 import { defaultTasks } from './data'
 
 export const db = new Dexie('tasksDB') as Dexie & {
@@ -7,10 +7,12 @@ export const db = new Dexie('tasksDB') as Dexie & {
 		ITask,
 		'id' // primary key "id" (for the typings only)
 	>
+	// settings: EntityTable<{ key: string; value: string }, 'key'>
 }
 
 db.version(1).stores({
 	tasks: 'id',
+	// settings: 'key',
 })
 
 db.on('populate', populate)

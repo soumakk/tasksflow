@@ -29,6 +29,7 @@ export default function PriorityEditField({
 			<DropdownMenuContent className="w-auto">
 				{PriorityOptions?.map((opt) => (
 					<DropdownMenuItem
+						key={opt.value}
 						onClick={() => {
 							setSelected(opt.value)
 							onSave(opt.value)

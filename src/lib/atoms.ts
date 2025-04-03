@@ -12,3 +12,6 @@ export const statusFilterAtom = atom<string[]>([])
 export const tagsFilterAtom = atom<string[]>([])
 export const priorityFilterAtom = atom<string[]>([])
 export const selectedRowsAtom = atom<RowSelectionState>({})
+
+export const titleAtom = atomWithStorage<string>('title', 'Tasks')
+export const themeAtom = atomWithStorage<string>('theme', 'light')
