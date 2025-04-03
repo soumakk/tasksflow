@@ -75,7 +75,7 @@ export default function TableView({
 				return (
 					<div className="h-full w-full items-center justify-center hidden group-hover/row:flex">
 						<Trash2
-							className="h-3.5 w-3.5 text-destructive"
+							className="h-3.5 w-3.5 text-red-500"
 							onClick={() => deleteRow(row?.id)}
 						/>
 					</div>

@@ -38,7 +38,7 @@ function App() {
 	return (
 		<>
 			<div className="relative h-full max-w-5xl mx-auto">
-				<div className="flex justify-between items-center px-4 py-3">
+				<div className="flex justify-between items-center px-4 py-4">
 					<Title />
 
 					<ThemeSwitch />
