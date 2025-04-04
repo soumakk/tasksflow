@@ -14,6 +14,7 @@ import {
 } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { ISelectOption } from '@/components/widgets/Select'
+import { cn } from '@/lib/utils'
 
 export function MultiDropdown(props: {
 	id?: string
@@ -35,17 +36,22 @@ export function MultiDropdown(props: {
 					size="sm"
 					role="combobox"
 					aria-expanded={open}
-					className="relative gap-1.5"
+					className={cn(
+						'relative gap-1.5 font-normal rounded-full h-7 px-2.5 data-[state=open]:bg-muted',
+						{
+							'bg-primary/10': selected?.length,
+						}
+					)}
 				>
 					{trigger ?? <span className="capitalize">{title}</span>}
 					{selected?.length ? (
-						<Badge className="ml-1 text-xs h-5 w-5 p-0 grid place-content-center">
+						<Badge className="ml-1 text-xs h-4 w-4 p-0 grid place-content-center rounded-full">
 							{selected?.length}
 						</Badge>
 					) : null}
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-[200px] p-0">
+			<PopoverContent className="w-[200px] p-0" align="start">
 				<Command>
 					<CommandInput placeholder={`Search ${title}`} />
 					<CommandEmpty>No {title} found.</CommandEmpty>
@@ -63,10 +69,11 @@ export function MultiDropdown(props: {
 									}
 									onSelect(Array.from(temp))
 								}}
+								className="text-xs"
 							>
 								<Checkbox
 									checked={selected?.includes(opt.value)}
-									className="mr-2"
+									className="mr-1"
 								/>
 								{opt.label}
 							</CommandItem>

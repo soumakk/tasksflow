@@ -9,9 +9,10 @@ import { statusAtom, tagsAtom, tasksAtom } from './lib/atoms'
 import Title from './modules/Title'
 import ThemeSwitch from './modules/ThemeSwitch'
 import dayjs from 'dayjs'
-import { generateId } from './lib/utils'
+import { cn, generateId } from './lib/utils'
 import { db } from './lib/db'
-import { Columns3, Table } from 'lucide-react'
+import { Columns3, Filter, ListFilter, SlidersHorizontal, Table } from 'lucide-react'
+import TasksFilters from './modules/TasksFilters'
 
 function App() {
 	const tasksList = useAtomValue(tasksAtom)
@@ -19,6 +20,7 @@ function App() {
 	const tagsList = useAtomValue(tagsAtom)
 	const [saveDrawerOpen, setSaveDrawerOpen] = useState(false)
 	const [selectedTaskToView, setSelectedTaskToView] = useState<ITask | null>(null)
+	const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 
 	async function addNewTask() {
 		const newTask: ITask = {
@@ -57,14 +59,28 @@ function App() {
 							</TabsTrigger>
 						</TabsList>
 
-						<Button
-							size="sm"
-							className="rounded-full px-4"
-							onClick={() => addNewTask()}
-						>
-							Add task
-						</Button>
+						<div className="flex items-center gap-2">
+							<button
+								onClick={() => setIsFiltersOpen((o) => !o)}
+								className={cn(
+									'h-8 w-8 rounded-full text-muted-foreground flex items-center justify-center hover:bg-muted hover:text-primary',
+									{ 'text-primary': isFiltersOpen }
+								)}
+							>
+								<ListFilter className="h-4 w-4" />
+							</button>
+							<Button
+								size="sm"
+								className="rounded-full px-4"
+								onClick={() => addNewTask()}
+							>
+								Add task
+							</Button>
+						</div>
 					</div>
+
+					{isFiltersOpen && <TasksFilters />}
+
 					<TabsContent value="table" className="m-0">
 						<TableView
 							statusList={statusList}
@@ -81,9 +97,6 @@ function App() {
 						</p>
 					</TabsContent>
 				</Tabs>
-				{/* <div className="flex px-4 py-2 ">
-					<TasksFilters />
-					</div> */}
 			</div>
 
 			<SaveTaskDrawer

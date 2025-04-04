@@ -51,52 +51,54 @@ export default function TasksFilters() {
 	}
 
 	return (
-		<div className="flex items-center gap-3">
-			<Input
-				placeholder="Search tasks"
-				className="h-8"
-				value={searchQuery}
-				onChange={(e) => setSearchQuery(e.target.value)}
-			/>
+		<div className="flex border-t border-border">
+			<div className="flex items-center gap-3 py-1">
+				{/* <Input
+					placeholder="Search tasks"
+					className="h-8"
+					value={searchQuery}
+					onChange={(e) => setSearchQuery(e.target.value)}
+				/> */}
 
-			<MultiDropdown
-				trigger={
-					<>
-						<CircleCheck className="h-4 w-4" />
-						<span>Status</span>
-					</>
-				}
-				options={statusOptions}
-				title="status"
-				selected={statusFilter}
-				onSelect={(selected) => setStatusFilter(selected)}
-			/>
+				<MultiDropdown
+					trigger={
+						<>
+							<CircleCheck className="h-4 w-4" />
+							<span>Status</span>
+						</>
+					}
+					options={statusOptions}
+					title="status"
+					selected={statusFilter}
+					onSelect={(selected) => setStatusFilter(selected)}
+				/>
 
-			<MultiDropdown
-				trigger={
-					<>
-						<Tag className="h-4 w-4" />
-						<span>Tags</span>
-					</>
-				}
-				options={tagsOptions}
-				title="tags"
-				selected={tagsFilter}
-				onSelect={(selected) => setTagsFilter(selected)}
-			/>
+				{/* <MultiDropdown
+					trigger={
+						<>
+							<Tag className="h-4 w-4" />
+							<span>Tags</span>
+						</>
+					}
+					options={tagsOptions}
+					title="tags"
+					selected={tagsFilter}
+					onSelect={(selected) => setTagsFilter(selected)}
+				/> */}
 
-			<MultiDropdown
-				trigger={
-					<>
-						<Flag className="h-4 w-4" />
-						<span>Priority</span>
-					</>
-				}
-				options={PriorityOptions}
-				title="priority"
-				selected={priorityFilter}
-				onSelect={(selected) => setPriorityFilter(selected)}
-			/>
+				<MultiDropdown
+					trigger={
+						<>
+							<Flag className="h-4 w-4" />
+							<span>Priority</span>
+						</>
+					}
+					options={PriorityOptions}
+					title="priority"
+					selected={priorityFilter}
+					onSelect={(selected) => setPriorityFilter(selected)}
+				/>
+			</div>
 		</div>
 	)
 }

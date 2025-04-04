@@ -21,7 +21,7 @@ export default function ThemeSwitch() {
 	return (
 		<button
 			onClick={toggleTheme}
-			className="border border-border h-8 w-8 rounded-full flex items-center justify-center"
+			className="border border-border h-8 w-8 rounded-full flex items-center justify-center hover:bg-muted"
 		>
 			{theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
 		</button>
