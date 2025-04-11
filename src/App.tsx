@@ -2,17 +2,18 @@ import { Button } from '@/components/ui/button'
 import SaveTaskDrawer from '@/modules/SaveTaskDrawer'
 import TableView from '@/modules/TableView'
 import { ITask, TaskPriority } from '@/types/tasks'
-import { useAtomValue } from 'jotai'
+import { useAtom, useAtomValue } from 'jotai'
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
-import { statusAtom, tagsAtom, tasksAtom } from './lib/atoms'
+import { searchQueryAtom, statusAtom, tagsAtom, tasksAtom } from './lib/atoms'
 import Title from './modules/Title'
 import ThemeSwitch from './modules/ThemeSwitch'
 import dayjs from 'dayjs'
 import { cn, generateId } from './lib/utils'
 import { db } from './lib/db'
-import { Columns3, Filter, ListFilter, SlidersHorizontal, Table } from 'lucide-react'
+import { Columns3, Filter, ListFilter, Search, SlidersHorizontal, Table } from 'lucide-react'
 import TasksFilters from './modules/TasksFilters'
+import { Input } from './components/ui/input'
 
 function App() {
 	const tasksList = useAtomValue(tasksAtom)
@@ -21,6 +22,7 @@ function App() {
 	const [saveDrawerOpen, setSaveDrawerOpen] = useState(false)
 	const [selectedTaskToView, setSelectedTaskToView] = useState<ITask | null>(null)
 	const [isFiltersOpen, setIsFiltersOpen] = useState(false)
+	const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom)
 
 	async function addNewTask() {
 		const newTask: ITask = {
@@ -47,8 +49,19 @@ function App() {
 				</div>
 
 				<Tabs defaultValue="table" className="">
-					<div className="py-1 flex items-center justify-between">
-						<TabsList>
+					<div className="py-1 flex items-center justify-between px-2">
+						<div>
+							<div className="flex items-center">
+								<Search className="h-4 w-4 text-muted-foreground" />
+								<Input
+									placeholder="Search tasks"
+									className="h-8 text-xs border-0 placeholder:text-xs focus-visible:ring-0"
+									value={searchQuery}
+									onChange={(e) => setSearchQuery(e.target.value)}
+								/>
+							</div>
+						</div>
+						{/* <TabsList>
 							<TabsTrigger value="table">
 								<Table className="h-4 w-4 mr-1" />
 								<span>Table</span>
@@ -57,7 +70,7 @@ function App() {
 								<Columns3 className="h-4 w-4 mr-1" />
 								<span>Board</span>
 							</TabsTrigger>
-						</TabsList>
+						</TabsList> */}
 
 						<div className="flex items-center gap-2">
 							<button
