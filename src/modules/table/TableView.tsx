@@ -1,36 +1,27 @@
-import { Badge } from '@/components/ui/badge'
 import DataTable from '@/components/widgets/DataTable'
 import { priorityFilterAtom, searchQueryAtom, statusFilterAtom, tagsFilterAtom } from '@/lib/atoms'
 import { db } from '@/lib/db'
 import { ColumnDef } from '@tanstack/react-table'
+import dayjs from 'dayjs'
 import { useLiveQuery } from 'dexie-react-hooks'
 import { useAtomValue } from 'jotai'
+import { Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
-import { formatDate } from '../lib/utils'
-import { IStatus, ITag, ITask, TaskPriority } from '../types/tasks'
-import TextEditField from './fields/TextEditField'
-import PriorityEditField from './fields/PriorityEditField'
-import StatusEditField from './fields/StatusEditField'
-import dayjs from 'dayjs'
-import DateEditField from './fields/DateEditField'
-import { Checkbox } from '@/components/ui/checkbox'
-import { Trash, Trash2 } from 'lucide-react'
+import { formatDate } from '../../lib/utils'
+import { ITask, TaskPriority } from '../../types/tasks'
+import DateEditField from '../fields/DateEditField'
+import PriorityEditField from '../fields/PriorityEditField'
+import StatusEditField from '../fields/StatusEditField'
+import TextEditField from '../fields/TextEditField'
 
-export default function TableView({
-	onViewTask,
-	statusList,
-	tagsList,
-}: {
-	onViewTask?: (task: ITask) => void
-	statusList: IStatus[]
-	tagsList: ITag[]
-}) {
+export default function TableView() {
 	const searchQuery = useAtomValue(searchQueryAtom)
 	const statusFilter = useAtomValue(statusFilterAtom)
 	const tagsFilter = useAtomValue(tagsFilterAtom)
 	const priorityFilter = useAtomValue(priorityFilterAtom)
 	const [editingCell, setEditingCell] = useState(null)
 	const tasks = useLiveQuery(() => db.tasks.toArray())
+	const statusList = useLiveQuery(() => db.status.toArray())
 
 	async function updateCell(id: string, key: string, value: string) {
 		const task = tasks.find((t) => t.id === id)
@@ -42,32 +33,6 @@ export default function TableView({
 	}
 
 	const columns: ColumnDef<ITask>[] = [
-		// {
-		// 	id: 'select',
-		// 	header: ({ table }) => (
-		// 		<Checkbox
-		// 			checked={Boolean(
-		// 				table.getIsAllPageRowsSelected() ||
-		// 					(table.getIsSomePageRowsSelected() && 'indeterminate')
-		// 			)}
-		// 			onCheckedChange={(value) => table.toggleAllPageRowsSelected(!!value)}
-		// 			aria-label="Select all"
-		// 		/>
-		// 	),
-		// 	cell: ({ row }) => (
-		// 		<div className="px-3  flex items-center" onClick={(e) => e.stopPropagation()}>
-		// 			<Checkbox
-		// 				checked={row.getIsSelected()}
-		// 				onCheckedChange={(value) => row.toggleSelected(!!value)}
-		// 				aria-label="Select row"
-		// 			/>
-		// 		</div>
-		// 	),
-		// 	enableSorting: false,
-		// 	enableHiding: false,
-		// 	size: 50,
-		// 	enableResizing: false,
-		// },
 		{
 			id: 'action',
 			header: () => null,
@@ -167,6 +132,7 @@ export default function TableView({
 							setEditingCell(null)
 						}}
 						initialValue={statusId}
+						statusList={statusList}
 					/>
 				)
 			},
@@ -260,7 +226,7 @@ export default function TableView({
 		<DataTable
 			columns={columns}
 			data={filteredTasks}
-			onRowClick={(row) => onViewTask?.(row.original)}
+			// onRowClick={(row) => onViewTask?.(row.original)}
 		/>
 	)
 }

@@ -1,25 +1,20 @@
-import { Button } from '@/components/ui/button'
-import { Input } from '@/components/ui/input'
 import { MultiDropdown } from '@/components/widgets/MultiDropdown'
 import {
 	priorityFilterAtom,
 	searchQueryAtom,
 	selectedRowsAtom,
-	statusAtom,
 	statusFilterAtom,
-	tagsAtom,
 	tagsFilterAtom,
-	tasksAtom,
 } from '@/lib/atoms'
 import { PriorityOptions } from '@/lib/data'
-import { useAtom, useAtomValue, useSetAtom } from 'jotai'
-import { CircleCheck, Flag, Tag } from 'lucide-react'
-import { isEmpty } from 'radash'
+import { db } from '@/lib/db'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { useAtom, useSetAtom } from 'jotai'
+import { CircleCheck, Flag } from 'lucide-react'
 
 export default function TasksFilters() {
-	const setTasks = useSetAtom(tasksAtom)
-	const statusList = useAtomValue(statusAtom)
-	const tagsList = useAtomValue(tagsAtom)
+	// const setTasks = useSetAtom(tasksAtom)
+	const statusList = useLiveQuery(() => db.status.toArray())
 
 	const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom)
 	const [statusFilter, setStatusFilter] = useAtom(statusFilterAtom)
@@ -32,23 +27,23 @@ export default function TasksFilters() {
 		value: status.id,
 	}))
 
-	const tagsOptions = tagsList?.map((tag) => ({
-		label: tag.name,
-		value: tag.id,
-	}))
+	// const tagsOptions = tagsList?.map((tag) => ({
+	// 	label: tag.name,
+	// 	value: tag.id,
+	// }))
 
-	function deleteRows() {
-		setTasks((tasks) => tasks?.filter((task) => !Object.keys(selectedRows)?.includes(task.id)))
-		setSelectedRows({})
-	}
+	// function deleteRows() {
+	// 	setTasks((tasks) => tasks?.filter((task) => !Object.keys(selectedRows)?.includes(task.id)))
+	// 	setSelectedRows({})
+	// }
 
-	if (!isEmpty(selectedRows)) {
-		return (
-			<Button size="sm" variant="outline" onClick={deleteRows}>
-				Delete {Object.keys(selectedRows).length} row(s)
-			</Button>
-		)
-	}
+	// if (!isEmpty(selectedRows)) {
+	// 	return (
+	// 		<Button size="sm" variant="outline" onClick={deleteRows}>
+	// 			Delete {Object.keys(selectedRows).length} row(s)
+	// 		</Button>
+	// 	)
+	// }
 
 	return (
 		<div className="flex border-t border-border">

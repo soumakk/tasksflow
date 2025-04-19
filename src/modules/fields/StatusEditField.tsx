@@ -5,18 +5,18 @@ import {
 	DropdownMenuItem,
 	DropdownMenuTrigger,
 } from '@/components/ui/dropdown'
-import { statusAtom } from '@/lib/atoms'
-import { useAtomValue } from 'jotai'
+import { IStatus } from '@/types/tasks'
 import { useState } from 'react'
 
 export default function StatusEditField({
 	onSave,
 	initialValue,
+	statusList,
 }: {
 	onSave: (value: string) => void
 	initialValue: string
+	statusList: IStatus[]
 }) {
-	const statusList = useAtomValue(statusAtom)
 	const [selected, setSelected] = useState(initialValue)
 	const statusInfo = statusList?.find((opt) => opt.id === selected)
 	return (

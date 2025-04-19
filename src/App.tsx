@@ -1,24 +1,21 @@
 import { Button } from '@/components/ui/button'
 import SaveTaskDrawer from '@/modules/SaveTaskDrawer'
-import TableView from '@/modules/TableView'
+import TableView from '@/modules/table/TableView'
 import { ITask, TaskPriority } from '@/types/tasks'
-import { useAtom, useAtomValue } from 'jotai'
+import dayjs from 'dayjs'
+import { useAtom } from 'jotai'
+import { Columns3, ListFilter, Table } from 'lucide-react'
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
-import { searchQueryAtom, statusAtom, tagsAtom, tasksAtom } from './lib/atoms'
-import Title from './modules/Title'
-import ThemeSwitch from './modules/ThemeSwitch'
-import dayjs from 'dayjs'
-import { cn, generateId } from './lib/utils'
+import { searchQueryAtom } from './lib/atoms'
 import { db } from './lib/db'
-import { Columns3, Filter, ListFilter, Search, SlidersHorizontal, Table } from 'lucide-react'
-import TasksFilters from './modules/TasksFilters'
-import { Input } from './components/ui/input'
+import { cn, generateId } from './lib/utils'
+import BoardView from './modules/board/BoardView'
+import TasksFilters from './modules/table/TasksFilters'
+import ThemeSwitch from './modules/ThemeSwitch'
+import Title from './modules/Title'
 
 function App() {
-	const tasksList = useAtomValue(tasksAtom)
-	const statusList = useAtomValue(statusAtom)
-	const tagsList = useAtomValue(tagsAtom)
 	const [saveDrawerOpen, setSaveDrawerOpen] = useState(false)
 	const [selectedTaskToView, setSelectedTaskToView] = useState<ITask | null>(null)
 	const [isFiltersOpen, setIsFiltersOpen] = useState(false)
@@ -48,9 +45,9 @@ function App() {
 					<ThemeSwitch />
 				</div>
 
-				<Tabs defaultValue="table" className="">
+				<Tabs defaultValue="board" className="">
 					<div className="py-1 flex items-center justify-between px-2">
-						<div>
+						{/* <div>
 							<div className="flex items-center">
 								<Search className="h-4 w-4 text-muted-foreground" />
 								<Input
@@ -60,8 +57,8 @@ function App() {
 									onChange={(e) => setSearchQuery(e.target.value)}
 								/>
 							</div>
-						</div>
-						{/* <TabsList>
+						</div> */}
+						<TabsList>
 							<TabsTrigger value="table">
 								<Table className="h-4 w-4 mr-1" />
 								<span>Table</span>
@@ -70,7 +67,7 @@ function App() {
 								<Columns3 className="h-4 w-4 mr-1" />
 								<span>Board</span>
 							</TabsTrigger>
-						</TabsList> */}
+						</TabsList>
 
 						<div className="flex items-center gap-2">
 							<button
@@ -95,19 +92,10 @@ function App() {
 					{isFiltersOpen && <TasksFilters />}
 
 					<TabsContent value="table" className="m-0">
-						<TableView
-							statusList={statusList}
-							tagsList={tagsList}
-							// onViewTask={(task) => {
-							// 	setSelectedTaskToView(task)
-							// 	setSaveDrawerOpen(true)
-							// }}
-						/>
+						<TableView />
 					</TabsContent>
-					<TabsContent value="board">
-						<p className="text-center py-10 text-sm text-muted-foreground">
-							Coming soon
-						</p>
+					<TabsContent value="board" className="m-0">
+						<BoardView />
 					</TabsContent>
 				</Tabs>
 			</div>

@@ -9,18 +9,15 @@ import {
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { DatePicker } from '@/components/widgets/DatePicker'
-import { statusAtom, tagsAtom, tasksAtom } from '@/lib/atoms'
 import { PriorityOptions } from '@/lib/data'
+import { db } from '@/lib/db'
 import { generateId } from '@/lib/utils'
 import { ITask } from '@/types/tasks'
 import { useForm } from '@tanstack/react-form'
 import dayjs from 'dayjs'
-import { useAtomValue, useSetAtom } from 'jotai'
-import { Button } from '../components/ui/button'
-import { MultiSelect } from '../components/widgets/MultiSelect'
-import Select from '../components/widgets/Select'
 import { useEffect } from 'react'
-import { db } from '@/lib/db'
+import { Button } from '../components/ui/button'
+import Select from '../components/widgets/Select'
 
 interface ITaskForm {
 	title: string
@@ -40,9 +37,9 @@ export default function SaveTaskDrawer({
 	onClose: () => void
 	selectedTask?: ITask
 }) {
-	const statusList = useAtomValue(statusAtom)
-	const tagsList = useAtomValue(tagsAtom)
-	const setTasks = useSetAtom(tasksAtom)
+	// const statusList = useAtomValue(statusAtom)
+	// const tagsList = useAtomValue(tagsAtom)
+	// const setTasks = useSetAtom(tasksAtom)
 
 	const form = useForm({
 		defaultValues: {
@@ -66,12 +63,12 @@ export default function SaveTaskDrawer({
 					id: selectedTask.id,
 					tag_ids: value?.tags ?? [],
 				}
-				setTasks((tasks) =>
-					tasks?.map((task) => {
-						if (task.id === selectedTask.id) return updatedTask
-						else return task
-					})
-				)
+				// setTasks((tasks) =>
+				// 	tasks?.map((task) => {
+				// 		if (task.id === selectedTask.id) return updatedTask
+				// 		else return task
+				// 	})
+				// )
 			} else {
 				const newTask: ITask = {
 					due_date: value.due_date,
@@ -104,15 +101,15 @@ export default function SaveTaskDrawer({
 		}
 	}, [form, selectedTask])
 
-	const statusOptions = statusList?.map((status) => ({
-		label: status.name,
-		value: status.id.toString(),
-	}))
+	// const statusOptions = statusList?.map((status) => ({
+	// 	label: status.name,
+	// 	value: status.id.toString(),
+	// }))
 
-	const tagsOptions = tagsList?.map((tag) => ({
-		label: tag.name,
-		value: tag.id,
-	}))
+	// const tagsOptions = tagsList?.map((tag) => ({
+	// 	label: tag.name,
+	// 	value: tag.id,
+	// }))
 
 	return (
 		<Drawer
@@ -179,7 +176,7 @@ export default function SaveTaskDrawer({
 								</div>
 							)}
 						</form.Field>
-						<form.Field name="status">
+						{/* <form.Field name="status">
 							{(field) => (
 								<div className="flex flex-col gap-2">
 									<Label htmlFor={field.name}>Status</Label>
@@ -191,7 +188,7 @@ export default function SaveTaskDrawer({
 									/>
 								</div>
 							)}
-						</form.Field>
+						</form.Field> */}
 						{/* <form.Field name="tags">
 							{(field) => (
 								<div className="flex flex-col gap-2">

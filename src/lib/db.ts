@@ -1,22 +1,23 @@
-import { ITask } from '@/types/tasks'
+import { IStatus, ITask } from '@/types/tasks'
 import Dexie, { EntityTable, Table } from 'dexie'
-import { defaultTasks } from './data'
+import { defaultStatus, defaultTasks } from './data'
 
 export const db = new Dexie('tasksDB') as Dexie & {
 	tasks: EntityTable<
 		ITask,
 		'id' // primary key "id" (for the typings only)
 	>
-	// settings: EntityTable<{ key: string; value: string }, 'key'>
+	status: EntityTable<IStatus, 'id'>
 }
 
 db.version(1).stores({
 	tasks: 'id',
-	// settings: 'key',
+	status: 'id',
 })
 
 db.on('populate', populate)
 
 async function populate() {
 	await db.tasks.bulkAdd(defaultTasks)
+	await db.status.bulkAdd(defaultStatus)
 }
