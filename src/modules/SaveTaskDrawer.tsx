@@ -12,12 +12,13 @@ import { DatePicker } from '@/components/widgets/DatePicker'
 import { PriorityOptions } from '@/lib/data'
 import { db } from '@/lib/db'
 import { generateId } from '@/lib/utils'
-import { ITask } from '@/types/tasks'
+import { ITask, TaskPriority } from '@/types/tasks'
 import { useForm } from '@tanstack/react-form'
 import dayjs from 'dayjs'
 import { useEffect } from 'react'
 import { Button } from '../components/ui/button'
 import Select from '../components/widgets/Select'
+import { useLiveQuery } from 'dexie-react-hooks'
 
 interface ITaskForm {
 	title: string
@@ -37,7 +38,7 @@ export default function SaveTaskDrawer({
 	onClose: () => void
 	selectedTask?: ITask
 }) {
-	// const statusList = useAtomValue(statusAtom)
+	const statusList = useLiveQuery(() => db.status.toArray())
 	// const tagsList = useAtomValue(tagsAtom)
 	// const setTasks = useSetAtom(tasksAtom)
 
@@ -46,7 +47,7 @@ export default function SaveTaskDrawer({
 			title: '',
 			description: '',
 			priority: '',
-			status: '',
+			status: 's-1',
 			due_date: '',
 			tags: [],
 		},
@@ -82,29 +83,28 @@ export default function SaveTaskDrawer({
 					tag_ids: value?.tags ?? [],
 				}
 				await db.tasks.add(newTask)
-				// setTasks((tasks) => [...tasks, newTask])
 			}
 			onClose()
 		},
 	})
 
-	useEffect(() => {
-		if (selectedTask) {
-			form.reset({
-				title: selectedTask?.title ?? '',
-				description: selectedTask?.description ?? '',
-				priority: selectedTask?.priority ?? '',
-				status: selectedTask?.status_id ?? '',
-				due_date: selectedTask?.due_date ?? '',
-				tags: selectedTask?.tag_ids ?? [],
-			})
-		}
-	}, [form, selectedTask])
+	// useEffect(() => {
+	// 	if (selectedTask) {
+	// 		form.reset({
+	// 			title: selectedTask?.title ?? '',
+	// 			description: selectedTask?.description ?? '',
+	// 			priority: selectedTask?.priority ?? '',
+	// 			status: selectedTask?.status_id ?? '',
+	// 			due_date: selectedTask?.due_date ?? '',
+	// 			tags: selectedTask?.tag_ids ?? [],
+	// 		})
+	// 	}
+	// }, [form, selectedTask])
 
-	// const statusOptions = statusList?.map((status) => ({
-	// 	label: status.name,
-	// 	value: status.id.toString(),
-	// }))
+	const statusOptions = statusList?.map((status) => ({
+		label: status.name,
+		value: status.id.toString(),
+	}))
 
 	// const tagsOptions = tagsList?.map((tag) => ({
 	// 	label: tag.name,
@@ -163,7 +163,7 @@ export default function SaveTaskDrawer({
 								</div>
 							)}
 						</form.Field>
-						<form.Field name="priority">
+						<form.Field name="priority" defaultValue={TaskPriority.Normal}>
 							{(field) => (
 								<div className="flex flex-col gap-2">
 									<Label htmlFor={field.name}>Priority</Label>
@@ -176,7 +176,7 @@ export default function SaveTaskDrawer({
 								</div>
 							)}
 						</form.Field>
-						{/* <form.Field name="status">
+						<form.Field name="status" defaultValue="s-1">
 							{(field) => (
 								<div className="flex flex-col gap-2">
 									<Label htmlFor={field.name}>Status</Label>
@@ -188,7 +188,7 @@ export default function SaveTaskDrawer({
 									/>
 								</div>
 							)}
-						</form.Field> */}
+						</form.Field>
 						{/* <form.Field name="tags">
 							{(field) => (
 								<div className="flex flex-col gap-2">
@@ -203,7 +203,7 @@ export default function SaveTaskDrawer({
 								</div>
 							)}
 						</form.Field> */}
-						<form.Field name="due_date">
+						<form.Field name="due_date" defaultValue={dayjs().toISOString()}>
 							{(field) => (
 								<div className="flex flex-col gap-2">
 									<Label htmlFor={field.name}>Due Date</Label>

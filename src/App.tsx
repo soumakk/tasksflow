@@ -1,15 +1,12 @@
 import { Button } from '@/components/ui/button'
 import SaveTaskDrawer from '@/modules/SaveTaskDrawer'
 import TableView from '@/modules/table/TableView'
-import { ITask, TaskPriority } from '@/types/tasks'
-import dayjs from 'dayjs'
 import { useAtom } from 'jotai'
 import { Columns3, ListFilter, Table } from 'lucide-react'
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
-import { currentTabAtom, searchQueryAtom } from './lib/atoms'
-import { db } from './lib/db'
-import { cn, generateId } from './lib/utils'
+import { currentTabAtom } from './lib/atoms'
+import { cn } from './lib/utils'
 import BoardView from './modules/board/BoardView'
 import TasksFilters from './modules/table/TasksFilters'
 import ThemeSwitch from './modules/ThemeSwitch'
@@ -17,48 +14,34 @@ import Title from './modules/Title'
 
 function App() {
 	const [saveDrawerOpen, setSaveDrawerOpen] = useState(false)
-	const [selectedTaskToView, setSelectedTaskToView] = useState<ITask | null>(null)
 	const [isFiltersOpen, setIsFiltersOpen] = useState(false)
-	const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom)
 	const [currentTab, setCurrentTab] = useAtom(currentTabAtom)
 
-	async function addNewTask() {
-		const newTask: ITask = {
-			due_date: '',
-			priority: TaskPriority.Normal,
-			title: '',
-			description: '',
-			status_id: '1',
-			created_at: dayjs().toISOString(),
-			updated_at: dayjs().toISOString(),
-			id: generateId(),
-			tag_ids: [],
-		}
-		await db.tasks.add(newTask)
-	}
+	// async function addNewTask() {
+	// 	const newTask: ITask = {
+	// 		due_date: '',
+	// 		priority: TaskPriority.Normal,
+	// 		title: '',
+	// 		description: '',
+	// 		status_id: '1',
+	// 		created_at: dayjs().toISOString(),
+	// 		updated_at: dayjs().toISOString(),
+	// 		id: generateId(),
+	// 		tag_ids: [],
+	// 	}
+	// 	await db.tasks.add(newTask)
+	// }
 
 	return (
 		<>
 			<div className="relative h-full max-w-5xl mx-auto">
 				<div className="flex justify-between items-center px-4 py-4">
 					<Title />
-
 					<ThemeSwitch />
 				</div>
 
 				<Tabs value={currentTab} onValueChange={setCurrentTab}>
 					<div className="py-1 flex items-center justify-between px-2">
-						{/* <div>
-							<div className="flex items-center">
-								<Search className="h-4 w-4 text-muted-foreground" />
-								<Input
-									placeholder="Search tasks"
-									className="h-8 text-xs border-0 placeholder:text-xs focus-visible:ring-0"
-									value={searchQuery}
-									onChange={(e) => setSearchQuery(e.target.value)}
-								/>
-							</div>
-						</div> */}
 						<TabsList>
 							<TabsTrigger value="table">
 								<Table className="h-4 w-4 mr-1" />
@@ -83,7 +66,7 @@ function App() {
 							<Button
 								size="sm"
 								className="rounded-full px-4"
-								onClick={() => addNewTask()}
+								onClick={() => setSaveDrawerOpen(true)}
 							>
 								Add task
 							</Button>
@@ -105,9 +88,7 @@ function App() {
 				open={saveDrawerOpen}
 				onClose={() => {
 					setSaveDrawerOpen(false)
-					setSelectedTaskToView(null)
 				}}
-				selectedTask={selectedTaskToView}
 			/>
 		</>
 	)

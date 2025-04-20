@@ -1,20 +1,8 @@
-import { Badge } from '@/components/ui/badge'
 import { db } from '@/lib/db'
-import { cn } from '@/lib/utils'
-import {
-	attachClosestEdge,
-	Edge,
-	extractClosestEdge,
-} from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
-import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
-import {
-	draggable,
-	dropTargetForElements,
-	monitorForElements,
-} from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import invariant from 'tiny-invariant'
+import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/closest-edge'
+import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 
-import { IStatus, ITask } from '@/types/tasks'
+import { boardColumnsAtom } from '@/lib/atoms'
 import { getReorderDestinationIndex } from '@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index'
 import {
 	BaseEventPayload,
@@ -22,10 +10,10 @@ import {
 } from '@atlaskit/pragmatic-drag-and-drop/dist/types/internal-types'
 import { reorder } from '@atlaskit/pragmatic-drag-and-drop/reorder'
 import { useLiveQuery } from 'dexie-react-hooks'
-import { isEmpty } from 'radash'
-import { useCallback, useEffect, useRef, useState } from 'react'
 import { useAtom } from 'jotai'
-import { boardColumnsAtom } from '@/lib/atoms'
+import { isEmpty } from 'radash'
+import { useCallback, useEffect } from 'react'
+import StatusColumn from './StatusColumn'
 
 export default function BoardView() {
 	const tasksList = useLiveQuery(() => db.tasks.toArray())
@@ -208,125 +196,5 @@ export default function BoardView() {
 				)
 			})}
 		</div>
-	)
-}
-
-function StatusColumn({ status, tasks }: { status: IStatus; tasks: ITask[] }) {
-	const colRef = useRef(null)
-	const [isDraggedOver, setIsDraggedOver] = useState(false)
-
-	useEffect(() => {
-		const colEl = colRef.current
-		invariant(colEl)
-
-		return dropTargetForElements({
-			element: colEl,
-			onDragStart: () => setIsDraggedOver(true),
-			onDragEnter: () => setIsDraggedOver(true),
-			onDragLeave: () => setIsDraggedOver(false),
-			onDrop: () => setIsDraggedOver(false),
-			getData: () => ({ colId: status.id }),
-			getIsSticky: () => true,
-		})
-	}, [status.id])
-
-	return (
-		<div
-			ref={colRef}
-			className={cn('bg-card p-2 w-60 rounded-lg border border-border/20', {
-				'bg-blue-50': isDraggedOver,
-			})}
-		>
-			<Badge
-				className="text-black font-medium rounded-full mb-2"
-				style={{
-					color: status?.color,
-					backgroundColor: `${status?.color}1a`,
-				}}
-			>
-				{status?.name}
-			</Badge>
-
-			{tasks?.map((task) => (
-				<Task task={task} key={task.id} />
-			))}
-		</div>
-	)
-}
-
-function Task({ task }: { task: ITask }) {
-	const taskRef = useRef(null)
-	const [isDragging, setIsDragging] = useState(false)
-	const [closestEdge, setClosestEdge] = useState(null) // NEW
-
-	useEffect(() => {
-		const taskEl = taskRef.current
-		invariant(taskEl)
-
-		return combine(
-			draggable({
-				element: taskEl,
-				getInitialData: () => ({ type: 'task', taskId: task.id }),
-				onDragStart: () => setIsDragging(true),
-				onDrop: () => setIsDragging(false),
-			}),
-			dropTargetForElements({
-				element: taskEl,
-				getData: ({ input, element }) => {
-					const data = { type: 'task', taskId: task.id }
-					return attachClosestEdge(data, {
-						input,
-						element,
-						allowedEdges: ['top', 'bottom'],
-					})
-				},
-				getIsSticky: () => true,
-				onDragEnter: (args) => {
-					// Update the closest edge when a draggable item enters the drop zone
-					if (args.source.data.taskId !== task.id) {
-						setClosestEdge(extractClosestEdge(args.self.data))
-					}
-				},
-				onDrag: (args) => {
-					// Continuously update the closest edge while dragging over the drop zone
-					if (args.source.data.taskId !== task.id) {
-						setClosestEdge(extractClosestEdge(args.self.data))
-					}
-				},
-				onDragLeave: () => {
-					// Reset the closest edge when the draggable item leaves the drop zone
-					setClosestEdge(null)
-				},
-				onDrop: () => {
-					// Reset the closest edge when the draggable item is dropped
-					setClosestEdge(null)
-				},
-			})
-		)
-	}, [task.id])
-
-	return (
-		<div className="relative py-1">
-			<div
-				ref={taskRef}
-				className={cn('bg-background rounded p-2 text-xs shadow-xs', {
-					'opacity-50': isDragging,
-				})}
-			>
-				{task.title} - {task.status_id}
-			</div>
-			{closestEdge && <DropIndicator edge={closestEdge} />}
-		</div>
-	)
-}
-
-function DropIndicator({ edge }: { edge: Edge }) {
-	return (
-		<div
-			className={cn(' absolute  bg-blue-500 h-0.5 w-full rounded-2xl', {
-				'-top-[1px]': edge === 'top',
-				'-bottom-[1px]': edge === 'bottom',
-			})}
-		></div>
 	)
 }
