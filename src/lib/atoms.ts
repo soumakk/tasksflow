@@ -10,6 +10,6 @@ export const selectedRowsAtom = atom<RowSelectionState>({})
 
 export const titleAtom = atomWithStorage<string>('title', 'Tasks')
 export const themeAtom = atomWithStorage<string>('theme', 'light')
+export const currentTabAtom = atomWithStorage<string>('tab', 'board')
 
-export const tasksOrderAtom = atomWithStorage('tasksOrder', [])
-export const statusOrderAtom = atomWithStorage('statusOrder', [])
+export const boardColumnsAtom = atomWithStorage<Record<string, string[]>>('board-columns', {})

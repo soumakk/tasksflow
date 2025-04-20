@@ -7,7 +7,7 @@ import { useAtom } from 'jotai'
 import { Columns3, ListFilter, Table } from 'lucide-react'
 import { useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
-import { searchQueryAtom } from './lib/atoms'
+import { currentTabAtom, searchQueryAtom } from './lib/atoms'
 import { db } from './lib/db'
 import { cn, generateId } from './lib/utils'
 import BoardView from './modules/board/BoardView'
@@ -20,6 +20,7 @@ function App() {
 	const [selectedTaskToView, setSelectedTaskToView] = useState<ITask | null>(null)
 	const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 	const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom)
+	const [currentTab, setCurrentTab] = useAtom(currentTabAtom)
 
 	async function addNewTask() {
 		const newTask: ITask = {
@@ -45,7 +46,7 @@ function App() {
 					<ThemeSwitch />
 				</div>
 
-				<Tabs defaultValue="board" className="">
+				<Tabs value={currentTab} onValueChange={setCurrentTab}>
 					<div className="py-1 flex items-center justify-between px-2">
 						{/* <div>
 							<div className="flex items-center">

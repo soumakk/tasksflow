@@ -220,7 +220,7 @@ export default function TableView() {
 		return temp
 	}, [searchQuery, tasks, statusFilter, priorityFilter, tagsFilter])
 
-	if (!tasks) return null
+	if (!tasks || !statusList) return null
 
 	return (
 		<DataTable
