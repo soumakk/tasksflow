@@ -1,8 +1,8 @@
-import { Button } from '@/components/ui/button'
 import { themeAtom } from '@/lib/atoms'
 import { useAtom } from 'jotai'
 import { Moon, Sun } from 'lucide-react'
-import React, { useLayoutEffect } from 'react'
+import { motion } from 'motion/react'
+import { useLayoutEffect } from 'react'
 
 export default function ThemeSwitch() {
 	const [theme, setTheme] = useAtom(themeAtom)
@@ -19,11 +19,13 @@ export default function ThemeSwitch() {
 	}, [theme])
 
 	return (
-		<button
+		<motion.button
+			whileTap={{ scale: 0.98 }}
+			whileHover={{ scale: 1.05 }}
 			onClick={toggleTheme}
 			className="border border-border h-8 w-8 rounded-full flex items-center justify-center hover:bg-muted"
 		>
 			{theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-		</button>
+		</motion.button>
 	)
 }

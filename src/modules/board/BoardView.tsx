@@ -21,18 +21,6 @@ export default function BoardView() {
 
 	const [columnData, setColumnData] = useAtom(boardColumnsAtom)
 
-	useEffect(() => {
-		if (tasksList?.length && statusList?.length && isEmpty(columnData)) {
-			const temp = {} as Record<string, string[]>
-			for (const status of statusList) {
-				temp[status.id] = tasksList
-					?.filter((t) => t.status_id === status.id)
-					?.map((t) => t.id)
-			}
-			setColumnData(temp)
-		}
-	}, [columnData, setColumnData, statusList, tasksList])
-
 	const reorderCard = useCallback(
 		({
 			columnId,

@@ -1,11 +1,3 @@
-import {
-	Drawer,
-	DrawerClose,
-	DrawerContent,
-	DrawerFooter,
-	DrawerHeader,
-	DrawerTitle,
-} from '@/components/ui/drawer'
 import { Input } from '@/components/ui/input'
 import { Label } from '@/components/ui/label'
 import { DatePicker } from '@/components/widgets/DatePicker'
@@ -15,10 +7,9 @@ import { generateId } from '@/lib/utils'
 import { ITask, TaskPriority } from '@/types/tasks'
 import { useForm } from '@tanstack/react-form'
 import dayjs from 'dayjs'
-import { useEffect } from 'react'
+import { useLiveQuery } from 'dexie-react-hooks'
 import { Button } from '../components/ui/button'
 import Select from '../components/widgets/Select'
-import { useLiveQuery } from 'dexie-react-hooks'
 
 interface ITaskForm {
 	title: string
@@ -30,11 +21,9 @@ interface ITaskForm {
 }
 
 export default function SaveTaskDrawer({
-	open,
 	onClose,
 	selectedTask,
 }: {
-	open: boolean
 	onClose: () => void
 	selectedTask?: ITask
 }) {
@@ -112,84 +101,71 @@ export default function SaveTaskDrawer({
 	// }))
 
 	return (
-		<Drawer
-			open={open}
-			onOpenChange={() => {
-				onClose()
-				form.reset()
+		<form
+			onSubmit={(e) => {
+				e.preventDefault()
+				e.stopPropagation()
+				void form.handleSubmit()
 			}}
-			direction="right"
+			className="flex-1 flex flex-col overflow-hidden"
 		>
-			<DrawerContent>
-				<DrawerHeader>
-					<DrawerTitle>{selectedTask ? 'Edit' : 'New'} Task</DrawerTitle>
-				</DrawerHeader>
-
-				<form
-					onSubmit={(e) => {
-						e.preventDefault()
-						e.stopPropagation()
-						void form.handleSubmit()
-					}}
-					className="flex-1 flex flex-col overflow-hidden"
-				>
-					<div className="space-y-4 px-6 flex-1 overflow-auto">
-						<form.Field name="title">
-							{(field) => (
-								<div className="flex flex-col gap-2">
-									<Label htmlFor={field.name}>Title</Label>
-									<Input
-										autoFocus
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-									/>
-								</div>
-							)}
-						</form.Field>
-						<form.Field name="description">
-							{(field) => (
-								<div className="flex flex-col gap-2">
-									<Label htmlFor={field.name}>Description</Label>
-									<Input
-										id={field.name}
-										name={field.name}
-										value={field.state.value}
-										onBlur={field.handleBlur}
-										onChange={(e) => field.handleChange(e.target.value)}
-									/>
-								</div>
-							)}
-						</form.Field>
-						<form.Field name="priority" defaultValue={TaskPriority.Normal}>
-							{(field) => (
-								<div className="flex flex-col gap-2">
-									<Label htmlFor={field.name}>Priority</Label>
-									<Select
-										id={field.name}
-										value={field.state.value}
-										onChange={(value) => field.handleChange(value)}
-										options={PriorityOptions}
-									/>
-								</div>
-							)}
-						</form.Field>
-						<form.Field name="status" defaultValue="s-1">
-							{(field) => (
-								<div className="flex flex-col gap-2">
-									<Label htmlFor={field.name}>Status</Label>
-									<Select
-										id={field.name}
-										value={field.state.value}
-										onChange={(value) => field.handleChange(value)}
-										options={statusOptions}
-									/>
-								</div>
-							)}
-						</form.Field>
-						{/* <form.Field name="tags">
+			<div className="space-y-4  p-4 flex-1 overflow-auto">
+				<form.Field name="title">
+					{(field) => (
+						<div className="flex flex-col gap-2">
+							<Label htmlFor={field.name}>Title</Label>
+							<Input
+								autoFocus
+								id={field.name}
+								name={field.name}
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+							/>
+						</div>
+					)}
+				</form.Field>
+				<form.Field name="description">
+					{(field) => (
+						<div className="flex flex-col gap-2">
+							<Label htmlFor={field.name}>Description</Label>
+							<Input
+								id={field.name}
+								name={field.name}
+								value={field.state.value}
+								onBlur={field.handleBlur}
+								onChange={(e) => field.handleChange(e.target.value)}
+							/>
+						</div>
+					)}
+				</form.Field>
+				<form.Field name="priority" defaultValue={TaskPriority.Normal}>
+					{(field) => (
+						<div className="flex flex-col gap-2">
+							<Label htmlFor={field.name}>Priority</Label>
+							<Select
+								id={field.name}
+								value={field.state.value}
+								onChange={(value) => field.handleChange(value)}
+								options={PriorityOptions}
+							/>
+						</div>
+					)}
+				</form.Field>
+				<form.Field name="status" defaultValue="s-1">
+					{(field) => (
+						<div className="flex flex-col gap-2">
+							<Label htmlFor={field.name}>Status</Label>
+							<Select
+								id={field.name}
+								value={field.state.value}
+								onChange={(value) => field.handleChange(value)}
+								options={statusOptions}
+							/>
+						</div>
+					)}
+				</form.Field>
+				{/* <form.Field name="tags">
 							{(field) => (
 								<div className="flex flex-col gap-2">
 									<Label htmlFor={field.name}>Tags</Label>
@@ -203,38 +179,29 @@ export default function SaveTaskDrawer({
 								</div>
 							)}
 						</form.Field> */}
-						<form.Field name="due_date" defaultValue={dayjs().toISOString()}>
-							{(field) => (
-								<div className="flex flex-col gap-2">
-									<Label htmlFor={field.name}>Due Date</Label>
-									<DatePicker
-										id={field.name}
-										value={field.state.value}
-										onChange={(value) => field.handleChange(value)}
-									/>
-								</div>
-							)}
-						</form.Field>
-					</div>
+				<form.Field name="due_date" defaultValue={dayjs().toISOString()}>
+					{(field) => (
+						<div className="flex flex-col gap-2">
+							<Label htmlFor={field.name}>Due Date</Label>
+							<DatePicker
+								id={field.name}
+								value={field.state.value}
+								onChange={(value) => field.handleChange(value)}
+							/>
+						</div>
+					)}
+				</form.Field>
+			</div>
 
-					<DrawerFooter>
-						<DrawerClose asChild>
-							<Button
-								// disabled={addTaskMutation.isPending}
-								variant="outline"
-								className="w-full"
-							>
-								Cancel
-							</Button>
-						</DrawerClose>
-						<Button
-						//  disabled={addTaskMutation.isPending}
-						>
-							Save
-						</Button>
-					</DrawerFooter>
-				</form>
-			</DrawerContent>
-		</Drawer>
+			<div className="flex items-center gap-2 px-4 pb-4">
+				<Button
+					//  disabled={addTaskMutation.isPending}
+					size="sm"
+					className="w-full"
+				>
+					Save
+				</Button>
+			</div>
+		</form>
 	)
 }

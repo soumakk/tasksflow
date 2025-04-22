@@ -1,21 +1,37 @@
-import { Button } from '@/components/ui/button'
-import SaveTaskDrawer from '@/modules/SaveTaskDrawer'
 import TableView from '@/modules/table/TableView'
-import { useAtom } from 'jotai'
+import { useLiveQuery } from 'dexie-react-hooks'
+import { useAtom, useSetAtom } from 'jotai'
 import { Columns3, ListFilter, Table } from 'lucide-react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
-import { currentTabAtom } from './lib/atoms'
+import { boardColumnsAtom, currentTabAtom } from './lib/atoms'
+import { db } from './lib/db'
 import { cn } from './lib/utils'
+import AddTaskBtn from './modules/AddTaskBtn'
 import BoardView from './modules/board/BoardView'
 import TasksFilters from './modules/table/TasksFilters'
 import ThemeSwitch from './modules/ThemeSwitch'
 import Title from './modules/Title'
 
 function App() {
-	const [saveDrawerOpen, setSaveDrawerOpen] = useState(false)
 	const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 	const [currentTab, setCurrentTab] = useAtom(currentTabAtom)
+
+	const tasksList = useLiveQuery(() => db.tasks.toArray())
+	const statusList = useLiveQuery(() => db.status.toArray())
+	const setColumnData = useSetAtom(boardColumnsAtom)
+
+	useEffect(() => {
+		if (tasksList?.length && statusList?.length) {
+			const temp = {} as Record<string, string[]>
+			for (const status of statusList) {
+				temp[status.id] = tasksList
+					?.filter((t) => t.status_id === status.id)
+					?.map((t) => t.id)
+			}
+			setColumnData(temp)
+		}
+	}, [setColumnData, statusList, tasksList])
 
 	// async function addNewTask() {
 	// 	const newTask: ITask = {
@@ -63,13 +79,8 @@ function App() {
 							>
 								<ListFilter className="h-4 w-4" />
 							</button>
-							<Button
-								size="sm"
-								className="rounded-full px-4"
-								onClick={() => setSaveDrawerOpen(true)}
-							>
-								Add task
-							</Button>
+
+							<AddTaskBtn />
 						</div>
 					</div>
 
@@ -83,13 +94,6 @@ function App() {
 					</TabsContent>
 				</Tabs>
 			</div>
-
-			<SaveTaskDrawer
-				open={saveDrawerOpen}
-				onClose={() => {
-					setSaveDrawerOpen(false)
-				}}
-			/>
 		</>
 	)
 }

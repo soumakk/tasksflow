@@ -22,6 +22,10 @@ export default function TasksFilters() {
 	const [priorityFilter, setPriorityFilter] = useAtom(priorityFilterAtom)
 	const [selectedRows, setSelectedRows] = useAtom(selectedRowsAtom)
 
+	if (!statusList) {
+		return null
+	}
+
 	const statusOptions = statusList?.map((status) => ({
 		label: status.name,
 		value: status.id,

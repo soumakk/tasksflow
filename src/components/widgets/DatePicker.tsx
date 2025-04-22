@@ -22,11 +22,11 @@ export function DatePicker({ value, onChange, ...rest }: IDatePicker) {
 				<Button
 					variant={'outline'}
 					className={cn(
-						'w-full justify-start text-left font-normal px-3',
+						'h-8 w-full justify-start text-left text-xs font-normal px-2',
 						!value && 'text-muted-foreground'
 					)}
 				>
-					<CalendarIcon className="mr-2 h-4 w-4" />
+					<CalendarIcon className="h-4 w-4" />
 					{value ? dayjs(value).format('MMM DD, YYYY') : <span>Pick a date</span>}
 				</Button>
 			</PopoverTrigger>
