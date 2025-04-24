@@ -15,7 +15,9 @@ import { generateId } from '@/lib/utils'
 import { IStatus } from '@/types/tasks'
 import { useForm } from '@tanstack/react-form'
 import dayjs from 'dayjs'
+import { atom } from 'jotai'
 import { PlusIcon } from 'lucide-react'
+import { isEmpty } from 'radash'
 import { useState } from 'react'
 import { CirclePicker } from 'react-color'
 
@@ -28,21 +30,25 @@ export default function StatusEditField({
 	initialValue: string
 	statusList: IStatus[]
 }) {
-	const [isAddStatusOpen, setIsAddStatusOpen] = useState(false)
 	const [selected, setSelected] = useState(initialValue)
 	const statusInfo = statusList?.find((opt) => opt.id === selected)
+
 	return (
-		<DropdownMenu modal={false}>
+		<DropdownMenu modal={true}>
 			<DropdownMenuTrigger asChild>
 				<button className="w-full h-full flex items-center gap-2 px-3 cursor-pointer data-[state=open]:outline-2 outline-primary">
 					{selected ? (
 						<Badge
-							className="text-black font-medium rounded-full"
+							className="text-black font-medium rounded-full gap-1 px-2"
 							style={{
 								color: statusInfo?.color,
 								backgroundColor: `${statusInfo?.color}1a`,
 							}}
 						>
+							<div
+								className="h-2 w-2 rounded-full"
+								style={{ backgroundColor: statusInfo?.color }}
+							></div>
 							{statusInfo?.name}
 						</Badge>
 					) : null}
@@ -58,103 +64,111 @@ export default function StatusEditField({
 						}}
 						className="[&>svg]:size-4 text-xs"
 					>
-						<div
-							className="h-3 w-3 rounded-full border-2 border-background"
-							style={{ backgroundColor: opt.color }}
-						></div>
+						<div className="h-3 w-3 grid place-content-center">
+							<div
+								className="h-2 w-2 rounded-full"
+								style={{
+									backgroundColor: opt.color,
+								}}
+							></div>
+						</div>
+
 						<span>{opt.name}</span>
 					</DropdownMenuItem>
 				))}
 
-				<Popover open={isAddStatusOpen} onOpenChange={setIsAddStatusOpen} modal={true}>
-					<PopoverTrigger asChild>
-						<DropdownMenuItem
-							className="[&>svg]:size-3 text-xs"
-							onClick={(e) => {
-								e.preventDefault()
-								setIsAddStatusOpen(true)
-							}}
-						>
-							<PlusIcon />
-							<span>Add status</span>
-						</DropdownMenuItem>
-					</PopoverTrigger>
-					<PopoverContent className="p-0 w-[250px]" side="right" align="center">
-						<AddStatusForm onClose={() => setIsAddStatusOpen(false)} />
-					</PopoverContent>
-				</Popover>
+				<AddStatusForm onSave={onSave} />
 			</DropdownMenuContent>
 		</DropdownMenu>
 	)
 }
 
-function AddStatusForm({ onClose }: { onClose: () => void }) {
+function AddStatusForm({ onSave }: { onSave: (value: string) => void }) {
+	const [isAddStatusOpen, setIsAddStatusOpen] = useState(false)
 	const form = useForm({
 		defaultValues: {
 			name: '',
 			color: '',
 		},
 		onSubmit: async ({ value }) => {
-			console.log(value)
-			await db.status.add({
-				color: value?.color,
-				name: value?.name,
-				created_at: dayjs().toISOString(),
-				updated_at: dayjs().toISOString(),
-				id: generateId(),
-			})
-			// onClose()
+			if (value.name) {
+				const newId = generateId()
+				await db.status.add({
+					color: isEmpty(value?.color) ? '#151515' : value?.color,
+					name: value?.name,
+					created_at: dayjs().toISOString(),
+					updated_at: dayjs().toISOString(),
+					id: newId,
+				})
+				await onSave(newId)
+			}
 		},
 	})
 	return (
-		<form
-			onSubmit={(e) => {
-				e.preventDefault()
-				e.stopPropagation()
-				void form.handleSubmit()
-			}}
-			className="flex-1 flex flex-col overflow-hidden"
-		>
-			<div className="space-y-4  p-4 flex-1 overflow-auto">
-				<form.Field name="name">
-					{(field) => (
-						<div className="flex flex-col gap-2">
-							<Label htmlFor={field.name}>Name</Label>
-							<Input
-								autoFocus
-								id={field.name}
-								name={field.name}
-								value={field.state.value}
-								onBlur={field.handleBlur}
-								onChange={(e) => field.handleChange(e.target.value)}
-							/>
-						</div>
-					)}
-				</form.Field>
+		<Popover open={isAddStatusOpen} onOpenChange={setIsAddStatusOpen} modal={true}>
+			<PopoverTrigger asChild>
+				<DropdownMenuItem
+					className="[&>svg]:size-3 text-xs"
+					onClick={(e) => {
+						e.preventDefault()
+						setIsAddStatusOpen(true)
+					}}
+				>
+					<PlusIcon />
+					<span>Add status</span>
+				</DropdownMenuItem>
+			</PopoverTrigger>
+			<PopoverContent className="p-0 w-[250px]" side="right" align="center">
+				<form
+					onSubmit={(e) => {
+						e.preventDefault()
+						e.stopPropagation()
+						form.handleSubmit()
+					}}
+					className="flex-1 flex flex-col overflow-hidden"
+				>
+					<div className="space-y-4  p-4 flex-1 overflow-auto">
+						<form.Field name="name">
+							{(field) => (
+								<div className="flex flex-col gap-2">
+									<Label htmlFor={field.name}>Name</Label>
+									<Input
+										autoFocus
+										id={field.name}
+										name={field.name}
+										value={field.state.value}
+										onBlur={field.handleBlur}
+										onChange={(e) => field.handleChange(e.target.value)}
+									/>
+								</div>
+							)}
+						</form.Field>
 
-				<form.Field name="color">
-					{(field) => (
-						<div className="flex flex-col gap-2">
-							<Label htmlFor={field.name}>Color</Label>
+						<form.Field name="color">
+							{(field) => (
+								<div className="flex flex-col gap-2">
+									<Label htmlFor={field.name}>Color</Label>
 
-							<CirclePicker
-								colors={StatusColors}
-								color={field.state.value}
-								onChangeComplete={(color) => field.handleChange(color.hex)}
-								circleSize={20}
-								circleSpacing={4}
-								width="100%"
-							/>
-						</div>
-					)}
-				</form.Field>
-			</div>
+									<CirclePicker
+										colors={StatusColors}
+										color={field.state.value}
+										onChangeComplete={(color) => field.handleChange(color.hex)}
+										circleSize={20}
+										circleSpacing={4}
+										width="100%"
+									/>
+								</div>
+							)}
+						</form.Field>
+					</div>
 
-			<div className="flex items-center gap-2 px-4 pb-4">
-				<Button size="sm" className="w-full">
-					Save
-				</Button>
-			</div>
-		</form>
+					<div className="flex items-center gap-2 px-4 pb-4">
+						<Button size="sm" className="w-full">
+							Save
+						</Button>
+					</div>
+				</form>
+			</PopoverContent>
+		</Popover>
 	)
 }

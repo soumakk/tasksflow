@@ -3,22 +3,26 @@ import { extractClosestEdge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/clo
 import { monitorForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
 
 import { boardColumnsAtom } from '@/lib/atoms'
+import { IStatus, ITag, ITask } from '@/types/tasks'
 import { getReorderDestinationIndex } from '@atlaskit/pragmatic-drag-and-drop-hitbox/util/get-reorder-destination-index'
 import {
 	BaseEventPayload,
 	ElementDragType,
 } from '@atlaskit/pragmatic-drag-and-drop/dist/types/internal-types'
 import { reorder } from '@atlaskit/pragmatic-drag-and-drop/reorder'
-import { useLiveQuery } from 'dexie-react-hooks'
 import { useAtom } from 'jotai'
-import { isEmpty } from 'radash'
 import { useCallback, useEffect } from 'react'
 import StatusColumn from './StatusColumn'
 
-export default function BoardView() {
-	const tasksList = useLiveQuery(() => db.tasks.toArray())
-	const statusList = useLiveQuery(() => db.status.toArray())
-
+export default function BoardView({
+	statusList,
+	tagsList,
+	tasksList,
+}: {
+	tasksList: ITask[]
+	statusList: IStatus[]
+	tagsList: ITag[]
+}) {
 	const [columnData, setColumnData] = useAtom(boardColumnsAtom)
 
 	const reorderCard = useCallback(

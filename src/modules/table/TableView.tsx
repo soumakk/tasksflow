@@ -1,30 +1,36 @@
+import { Badge } from '@/components/ui/badge'
 import DataTable from '@/components/widgets/DataTable'
 import { priorityFilterAtom, searchQueryAtom, statusFilterAtom, tagsFilterAtom } from '@/lib/atoms'
 import { db } from '@/lib/db'
 import { ColumnDef } from '@tanstack/react-table'
 import dayjs from 'dayjs'
-import { useLiveQuery } from 'dexie-react-hooks'
 import { useAtomValue } from 'jotai'
 import { Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { formatDate } from '../../lib/utils'
-import { ITask, TaskPriority } from '../../types/tasks'
+import { IStatus, ITag, ITask, TaskPriority } from '../../types/tasks'
 import DateEditField from '../fields/DateEditField'
 import PriorityEditField from '../fields/PriorityEditField'
 import StatusEditField from '../fields/StatusEditField'
 import TextEditField from '../fields/TextEditField'
 
-export default function TableView() {
+export default function TableView({
+	statusList,
+	tagsList,
+	tasksList,
+}: {
+	tasksList: ITask[]
+	statusList: IStatus[]
+	tagsList: ITag[]
+}) {
 	const searchQuery = useAtomValue(searchQueryAtom)
 	const statusFilter = useAtomValue(statusFilterAtom)
 	const tagsFilter = useAtomValue(tagsFilterAtom)
 	const priorityFilter = useAtomValue(priorityFilterAtom)
 	const [editingCell, setEditingCell] = useState(null)
-	const tasks = useLiveQuery(() => db.tasks.toArray())
-	const statusList = useLiveQuery(() => db.status.toArray())
 
 	async function updateCell(id: string, key: string, value: string) {
-		const task = tasks.find((t) => t.id === id)
+		const task = tasksList.find((t) => t.id === id)
 		await db.tasks.update(id, { ...task, [key]: value, updated_at: dayjs().toISOString() })
 	}
 
@@ -137,29 +143,29 @@ export default function TableView() {
 				)
 			},
 		},
-		// {
-		// 	accessorKey: 'tag_ids',
-		// 	header: 'Tags',
-		// 	cell: ({ getValue, row, column }) => {
-		// 		const tagIds = getValue() as string[]
-		// 		if (!tagIds?.length) return null
-		// 		const tags = tagsList?.filter((opt) => tagIds?.includes(opt.id))
-		// 		return tags ? (
-		// 			<div
-		// 				className="h-full w-full px-3 flex items-center"
-		// 				onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
-		// 			>
-		// 				<div className="flex gap-1">
-		// 					{tags?.slice(0, 3)?.map((tag) => (
-		// 						<Badge className="rounded-full" key={tag.id}>
-		// 							{tag.name}
-		// 						</Badge>
-		// 					))}
-		// 				</div>
-		// 			</div>
-		// 		) : null
-		// 	},
-		// },
+		{
+			accessorKey: 'tag_ids',
+			header: 'Tags',
+			cell: ({ getValue, row, column }) => {
+				const tagIds = getValue() as string[]
+				if (!tagIds?.length) return null
+				const tags = tagsList?.filter((opt) => tagIds?.includes(opt.id))
+				return tags ? (
+					<div
+						className="h-full w-full px-3 flex items-center"
+						onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
+					>
+						<div className="flex gap-1">
+							{tags?.slice(0, 3)?.map((tag) => (
+								<Badge className="rounded-full" key={tag.id}>
+									{tag.name}
+								</Badge>
+							))}
+						</div>
+					</div>
+				) : null
+			},
+		},
 		{
 			accessorKey: 'due_date',
 			header: 'Date',
@@ -197,7 +203,7 @@ export default function TableView() {
 	]
 
 	const filteredTasks = useMemo(() => {
-		let temp = tasks?.slice()
+		let temp = tasksList?.slice()
 
 		if (searchQuery) {
 			temp = temp?.filter((task) =>
@@ -218,9 +224,7 @@ export default function TableView() {
 		}
 
 		return temp
-	}, [searchQuery, tasks, statusFilter, priorityFilter, tagsFilter])
-
-	if (!tasks || !statusList) return null
+	}, [searchQuery, tasksList, statusFilter, priorityFilter, tagsFilter])
 
 	return (
 		<DataTable

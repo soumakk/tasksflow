@@ -11,11 +11,14 @@ import { useRef, useState, useEffect } from 'react'
 import invariant from 'tiny-invariant'
 import PriorityFlag from '@/components/widgets/Flag'
 import { Calendar } from 'lucide-react'
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
+import SaveTaskDrawer from '../SaveTaskDrawer'
 
 export default function TaskCard({ task }: { task: ITask }) {
 	const taskRef = useRef(null)
 	const [isDragging, setIsDragging] = useState(false)
 	const [closestEdge, setClosestEdge] = useState(null) // NEW
+	const [isAddOpen, setIsAddOpen] = useState(false)
 
 	useEffect(() => {
 		const taskEl = taskRef.current
@@ -65,24 +68,33 @@ export default function TaskCard({ task }: { task: ITask }) {
 
 	return (
 		<div className="relative py-1">
-			<div
-				ref={taskRef}
-				className={cn('bg-background rounded p-2 text-xs shadow-xs', {
-					'opacity-50': isDragging,
-				})}
-			>
-				<p>{task.title}</p>
+			<Popover open={isAddOpen} onOpenChange={setIsAddOpen} modal={false}>
+				<PopoverTrigger asChild>
+					<div
+						ref={taskRef}
+						className={cn('bg-background rounded p-2 text-xs shadow-xs', {
+							'opacity-50': isDragging,
+						})}
+					>
+						<p>{task.title}</p>
 
-				<div className="flex items-center gap-2 my-1">
-					<PriorityFlag priority={task.priority as TaskPriority} />
-					<span className="capitalize">{task.priority}</span>
-				</div>
+						<div className="flex items-center gap-2 my-1">
+							<PriorityFlag priority={task.priority as TaskPriority} />
+							<span className="capitalize">{task.priority}</span>
+						</div>
 
-				<div className="flex items-center gap-2">
-					<Calendar className="h-3 w-3 text-zinc-500" />
-					<span>{formatDate(task.due_date)}</span>
-				</div>
-			</div>
+						<div className="flex items-center gap-2">
+							<Calendar className="h-3 w-3 text-zinc-500" />
+							<span>{formatDate(task.due_date)}</span>
+						</div>
+					</div>
+				</PopoverTrigger>
+
+				<PopoverContent align="start" side="right" className="p-0 shadow-xl">
+					<SaveTaskDrawer onClose={() => setIsAddOpen(false)} selectedTask={task} />
+				</PopoverContent>
+			</Popover>
+
 			{closestEdge && <DropIndicator edge={closestEdge} />}
 		</div>
 	)

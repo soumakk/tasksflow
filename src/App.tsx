@@ -1,11 +1,10 @@
 import TableView from '@/modules/table/TableView'
-import { useLiveQuery } from 'dexie-react-hooks'
 import { useAtom, useSetAtom } from 'jotai'
-import { Columns3, ListFilter, Table } from 'lucide-react'
+import { Columns3, ListFilter, Loader, Table } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
 import { boardColumnsAtom, currentTabAtom } from './lib/atoms'
-import { db } from './lib/db'
+import { useStatus, useTags, useTasks } from './lib/hooks/dexie'
 import { cn } from './lib/utils'
 import AddTaskBtn from './modules/AddTaskBtn'
 import BoardView from './modules/board/BoardView'
@@ -17,8 +16,9 @@ function App() {
 	const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 	const [currentTab, setCurrentTab] = useAtom(currentTabAtom)
 
-	const tasksList = useLiveQuery(() => db.tasks.toArray())
-	const statusList = useLiveQuery(() => db.status.toArray())
+	const { tasksList, isTasksLoading } = useTasks()
+	const { statusList, isStatusLoading } = useStatus()
+	const { tagsList, isTagsLoading } = useTags()
 	const setColumnData = useSetAtom(boardColumnsAtom)
 
 	useEffect(() => {
@@ -33,20 +33,7 @@ function App() {
 		}
 	}, [setColumnData, statusList, tasksList])
 
-	// async function addNewTask() {
-	// 	const newTask: ITask = {
-	// 		due_date: '',
-	// 		priority: TaskPriority.Normal,
-	// 		title: '',
-	// 		description: '',
-	// 		status_id: '1',
-	// 		created_at: dayjs().toISOString(),
-	// 		updated_at: dayjs().toISOString(),
-	// 		id: generateId(),
-	// 		tag_ids: [],
-	// 	}
-	// 	await db.tasks.add(newTask)
-	// }
+	const isContentLoading = isTasksLoading || isTagsLoading || isStatusLoading
 
 	return (
 		<>
@@ -86,12 +73,28 @@ function App() {
 
 					{isFiltersOpen && <TasksFilters />}
 
-					<TabsContent value="table" className="m-0">
-						<TableView />
-					</TabsContent>
-					<TabsContent value="board" className="m-0">
-						<BoardView />
-					</TabsContent>
+					{isContentLoading ? (
+						<div className="grid place-content-center py-32">
+							<Loader className="animate-spin h-5 w-5 text-primary" />
+						</div>
+					) : (
+						<>
+							<TabsContent value="table" className="m-0">
+								<TableView
+									tagsList={tagsList}
+									statusList={statusList}
+									tasksList={tasksList}
+								/>
+							</TabsContent>
+							<TabsContent value="board" className="m-0">
+								<BoardView
+									tagsList={tagsList}
+									statusList={statusList}
+									tasksList={tasksList}
+								/>
+							</TabsContent>
+						</>
+					)}
 				</Tabs>
 			</div>
 		</>

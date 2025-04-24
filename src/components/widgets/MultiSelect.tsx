@@ -2,19 +2,13 @@
 
 import * as React from 'react'
 
-import { ChevronsUpDown } from 'lucide-react'
-import { isEmpty } from 'radash'
-import { Button } from '@/components/ui/button'
 import { Checkbox } from '@/components/ui/checkbox'
-import {
-	Command,
-	CommandEmpty,
-	CommandGroup,
-	CommandInput,
-	CommandItem,
-} from '@/components/ui/command'
+import { Command, CommandGroup, CommandInput, CommandItem } from '@/components/ui/command'
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { ISelectOption } from '@/components/widgets/Select'
+import { X } from 'lucide-react'
+import { isEmpty } from 'radash'
+import { Badge } from '../ui/badge'
 
 export function MultiSelect(props: {
 	id?: string
@@ -25,49 +19,120 @@ export function MultiSelect(props: {
 }) {
 	const { id, options, title, value, onChange } = props
 	const [open, setOpen] = React.useState(false)
+	const [search, setSearch] = React.useState('')
+
+	const filteredOptions = options?.filter((opt) =>
+		isEmpty(search) ? true : opt.label?.toLowerCase()?.includes(search?.trim()?.toLowerCase())
+	)
+
+	function handleDelete(id: string) {
+		const temp = new Set(value)
+		if (temp.has(id)) {
+			temp.delete(id)
+		}
+		onChange(Array.from(temp))
+	}
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<Button
+				<div
 					id={id}
-					variant="outline"
-					role="combobox"
+					// variant="outline"
+					// role="combobox"
 					aria-expanded={open}
-					className="flex w-full justify-between font-normal px-3"
+					className="flex w-full font-normal p-2 text-xs border border-border rounded-sm items-center gap-2"
 				>
-					{!isEmpty(value)
-						? options
-								.filter((opt) => value?.includes(opt.value))
-								?.map((opt) => opt.label)
-								.join(', ')
-						: 'Select options'}
-					<ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
-				</Button>
+					{!isEmpty(value) ? (
+						options
+							.filter((opt) => value?.includes(opt.value))
+							?.map((opt) => (
+								<div>
+									<Badge
+										variant="outline"
+										className="border-border px-2"
+										onClick={(e) => e.stopPropagation()}
+									>
+										{opt.label}
+
+										<button
+											type="button"
+											onClick={(e) => {
+												e.stopPropagation()
+												handleDelete(opt.value)
+											}}
+										>
+											<X className="h-3 w-3 ml-1" />
+										</button>
+									</Badge>
+								</div>
+							))
+					) : (
+						<p className="">Select tags</p>
+					)}
+				</div>
 			</PopoverTrigger>
 			<PopoverContent className="p-0" align="start">
-				<Command>
-					<CommandInput placeholder={`Search ${title}`} />
-					<CommandEmpty>No {title} found.</CommandEmpty>
+				<Command
+					shouldFilter={false}
+					// filter={(value, search, keywords) => {
+					// 	if (value.includes(search)) return 1
+					// 	return 0
+					// }}
+				>
+					<CommandInput
+						value={search}
+						onValueChange={setSearch}
+						placeholder={`Search ${title}`}
+					/>
+					{/* <CommandEmpty>No {title} found.</CommandEmpty> */}
 					<CommandGroup>
-						{options.map((opt) => (
-							<CommandItem
-								key={opt.value}
-								value={opt.value}
-								onSelect={(currentValue) => {
-									const temp = new Set(value)
-									if (temp.has(currentValue)) {
-										temp.delete(currentValue)
-									} else {
-										temp.add(currentValue)
-									}
-									onChange(Array.from(temp))
-								}}
-							>
-								<Checkbox checked={value?.includes(opt.value)} className="mr-2" />
-								{opt.label}
-							</CommandItem>
-						))}
+						{filteredOptions?.length === 0 ? (
+							search ? (
+								<CommandItem
+									// key={opt.value}
+									// value={opt.value}
+									onSelect={(currentValue) => {
+										const temp = new Set(value)
+										if (temp.has(currentValue)) {
+											temp.delete(currentValue)
+										} else {
+											temp.add(currentValue)
+										}
+										onChange(Array.from(temp))
+									}}
+								>
+									{/* <Checkbox checked={value?.includes(opt.value)} className="mr-2" /> */}
+									Create new {search}
+								</CommandItem>
+							) : (
+								<div className="text-xs py-8 grid place-content-center">
+									No {title} found.
+								</div>
+							)
+						) : (
+							filteredOptions?.map((opt) => (
+								<CommandItem
+									key={opt.value}
+									value={opt.value}
+									onSelect={(currentValue) => {
+										const temp = new Set(value)
+										if (temp.has(currentValue)) {
+											temp.delete(currentValue)
+										} else {
+											temp.add(currentValue)
+										}
+										onChange(Array.from(temp))
+									}}
+								>
+									<Checkbox
+										checked={value?.includes(opt.value)}
+										className="mr-2"
+									/>
+									{opt.label}
+								</CommandItem>
+							))
+						)}
 					</CommandGroup>
 				</Command>
 			</PopoverContent>

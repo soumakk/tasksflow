@@ -30,7 +30,7 @@ export default function AddTaskBtn() {
 			</PopoverTrigger>
 
 			<PopoverContent align="end" className="p-0 shadow-xl">
-				<SaveTaskDrawer onClose={() => setIsAddOpen(false)} />
+				{isAddOpen && <SaveTaskDrawer onClose={() => setIsAddOpen(false)} />}
 			</PopoverContent>
 		</Popover>
 	)
