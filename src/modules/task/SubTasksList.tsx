@@ -4,6 +4,7 @@ import { ITask } from '@/types/tasks'
 import dayjs from 'dayjs'
 import { Circle, CircleCheck, PlusIcon, Trash2 } from 'lucide-react'
 import TextField from '../fields/TextField'
+import CircularProgress from '@/components/widgets/CircularProgress'
 
 export default function SubTasksList({ task }: { task: ITask }) {
 	async function updateCell(id: string, key: string, value: any) {
@@ -33,9 +34,17 @@ export default function SubTasksList({ task }: { task: ITask }) {
 		await updateCell(taskId, 'sub_tasks', temp)
 	}
 
+	const totalCount = task.sub_tasks.length
+	const completedCount = task.sub_tasks?.filter((st) => st.completed).length
+	const progress = (completedCount * 100) / totalCount
+
 	return (
-		<div>
-			<label className="text-muted-foreground text-sm">Sub Tasks</label>
+		<div className="py-5 border-t border-border">
+			<div className="flex items-center justify-between mb-2">
+				<label className="text-muted-foreground text-sm">Sub Tasks</label>
+
+				<CircularProgress progress={progress} size={20} strokeWidth={3} />
+			</div>
 
 			<ul>
 				{task.sub_tasks?.map((st) => (
@@ -77,7 +86,7 @@ export default function SubTasksList({ task }: { task: ITask }) {
 
 				<button
 					onClick={() => handleAddNewSubtask(task.id)}
-					className="flex items-center gap-2 text-sm py-2 text-muted-foreground w-full cursor-pointer"
+					className="flex items-center gap-2 text-sm px-2 py-2 text-muted-foreground w-full cursor-pointer hover:bg-accent"
 				>
 					<PlusIcon className="h-4 w-4" />
 					<span>Add Subtask</span>
