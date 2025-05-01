@@ -1,20 +1,26 @@
 import TableView from '@/modules/table/TableView'
 import { useAtom, useSetAtom } from 'jotai'
-import { Columns3, ListFilter, Loader, Table } from 'lucide-react'
+import { Columns3, ListFilter, Loader, PlusIcon, Table } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
 import { boardColumnsAtom, currentTabAtom } from './lib/atoms'
 import { useStatus, useTags, useTasks } from './lib/hooks/dexie'
-import { cn } from './lib/utils'
+import { cn, generateId } from './lib/utils'
 import AddTaskBtn from './modules/AddTaskBtn'
 import BoardView from './modules/board/BoardView'
 import TasksFilters from './modules/table/TasksFilters'
 import ThemeSwitch from './modules/ThemeSwitch'
 import Title from './modules/Title'
+import TaskDetailsDialog from './modules/task/TaskDetailsDialog'
+import { Button } from './components/ui/button'
+import { ITask, TaskPriority } from './types/tasks'
+import dayjs from 'dayjs'
+import { db } from './lib/db'
 
 function App() {
 	const [isFiltersOpen, setIsFiltersOpen] = useState(false)
 	const [currentTab, setCurrentTab] = useAtom(currentTabAtom)
+	const [selectedTaskId, setSelectedTaskId] = useState(null)
 
 	const { tasksList, isTasksLoading } = useTasks()
 	const { statusList, isStatusLoading } = useStatus()
@@ -32,6 +38,23 @@ function App() {
 			setColumnData(temp)
 		}
 	}, [setColumnData, statusList, tasksList])
+
+	async function handleNewTask() {
+		const newId = generateId()
+		const newTask: ITask = {
+			due_date: '',
+			priority: TaskPriority.Normal,
+			title: 'Untitled',
+			description: '',
+			status_id: 's-1',
+			created_at: dayjs().toISOString(),
+			updated_at: dayjs().toISOString(),
+			id: newId,
+			tag_ids: [],
+		}
+		await db.tasks.add(newTask)
+		setSelectedTaskId(newId)
+	}
 
 	const isContentLoading = isTasksLoading || isTagsLoading || isStatusLoading
 
@@ -67,7 +90,14 @@ function App() {
 								<ListFilter className="h-4 w-4" />
 							</button>
 
-							<AddTaskBtn />
+							<Button
+								size="sm"
+								className="rounded-full px-3 gap-1"
+								onClick={handleNewTask}
+							>
+								<PlusIcon className="h-3 w-3" />
+								<span>Add task</span>
+							</Button>
 						</div>
 					</div>
 
@@ -84,6 +114,7 @@ function App() {
 									tagsList={tagsList}
 									statusList={statusList}
 									tasksList={tasksList}
+									onViewTask={(taskId) => setSelectedTaskId(taskId)}
 								/>
 							</TabsContent>
 							<TabsContent value="board" className="m-0">
@@ -91,12 +122,21 @@ function App() {
 									tagsList={tagsList}
 									statusList={statusList}
 									tasksList={tasksList}
+									onViewTask={(taskId) => setSelectedTaskId(taskId)}
 								/>
 							</TabsContent>
 						</>
 					)}
 				</Tabs>
 			</div>
+
+			{selectedTaskId ? (
+				<TaskDetailsDialog
+					open={!!selectedTaskId}
+					onClose={() => setSelectedTaskId(null)}
+					task={tasksList?.find((task) => task.id === selectedTaskId)}
+				/>
+			) : null}
 		</>
 	)
 }

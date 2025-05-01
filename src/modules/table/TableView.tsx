@@ -9,19 +9,25 @@ import { Trash2 } from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { formatDate } from '../../lib/utils'
 import { IStatus, ITag, ITask, TaskPriority } from '../../types/tasks'
-import DateEditField from '../fields/DateEditField'
-import PriorityEditField from '../fields/PriorityEditField'
-import StatusEditField from '../fields/StatusEditField'
-import TextEditField from '../fields/TextEditField'
+import DateField from '../fields/DateField'
+import PriorityField from '../fields/PriorityField'
+import StatusField from '../fields/StatusField'
+import TextField from '../fields/TextField'
+import PriorityFlag from '@/components/widgets/Flag'
+import { PriorityOptions } from '@/lib/data'
+import StatusBadge from '@/components/widgets/StatusBadge'
+import TagBadge from '@/components/widgets/TagBadge'
 
 export default function TableView({
 	statusList,
 	tagsList,
 	tasksList,
+	onViewTask,
 }: {
 	tasksList: ITask[]
 	statusList: IStatus[]
 	tagsList: ITag[]
+	onViewTask: (taskId: string) => void
 }) {
 	const searchQuery = useAtomValue(searchQueryAtom)
 	const statusFilter = useAtomValue(statusFilterAtom)
@@ -60,69 +66,45 @@ export default function TableView({
 			cell: ({ getValue, row, column }) => {
 				const isEditing = editingCell?.row === row?.id && editingCell?.col === column?.id
 				const value = getValue() as string
-				if (isEditing) {
-					return (
-						<TextEditField
-							onSave={(value) => {
-								updateCell(row?.id, column?.id, value)
-								setEditingCell(null)
-							}}
-							initialValue={value}
-						/>
-					)
-				}
+
 				return (
-					<div
-						className="h-full w-full px-3 flex items-center cursor-pointer"
-						onClick={() => setEditingCell({ row: row.id, col: column.id })}
-					>
+					<div className="h-full w-full px-3 flex items-center cursor-pointer">
 						<p className="whitespace-nowrap">{value}</p>
 					</div>
 				)
 			},
 			size: 300,
 		},
-		{
-			accessorKey: 'description',
-			header: 'Description',
-			cell: ({ getValue, row, column }) => {
-				const isEditing = editingCell?.row === row?.id && editingCell?.col === column?.id
-				const value = getValue() as string
-				if (isEditing) {
-					return (
-						<TextEditField
-							onSave={(value) => {
-								updateCell(row?.id, column?.id, value)
-								setEditingCell(null)
-							}}
-							initialValue={value}
-						/>
-					)
-				}
-				return (
-					<div
-						className="h-full w-full px-3 flex items-center cursor-pointer"
-						onClick={() => setEditingCell({ row: row.id, col: column.id })}
-					>
-						<p className="whitespace-nowrap">{value}</p>
-					</div>
-				)
-			},
-			size: 300,
-		},
+		// {
+		// 	accessorKey: 'description',
+		// 	header: 'Description',
+		// 	cell: ({ getValue, row, column }) => {
+		// 		const isEditing = editingCell?.row === row?.id && editingCell?.col === column?.id
+		// 		const value = getValue() as string
+
+		// 		return (
+		// 			<div className="h-full w-full px-3 flex items-center cursor-pointer">
+		// 				<p className="whitespace-nowrap">{value}</p>
+		// 			</div>
+		// 		)
+		// 	},
+		// 	size: 300,
+		// },
 		{
 			accessorKey: 'priority',
 			header: 'Priority',
 			cell: ({ getValue, row, column }) => {
 				const priority = getValue() as TaskPriority
+				const selectedLabel = PriorityOptions?.find((opt) => opt.value === priority)?.label
+
+				if (!priority) {
+					return null
+				}
 				return (
-					<PriorityEditField
-						onSave={(value) => {
-							updateCell(row?.id, column?.id, value)
-							setEditingCell(null)
-						}}
-						initialValue={priority}
-					/>
+					<button className="w-full h-full flex items-center gap-2 px-3 cursor-pointer data-[state=open]:outline-2 outline-primary">
+						<PriorityFlag priority={priority} />
+						<span>{selectedLabel}</span>
+					</button>
 				)
 			},
 		},
@@ -131,16 +113,9 @@ export default function TableView({
 			header: 'Status',
 			cell: ({ getValue, row, column }) => {
 				const statusId = getValue() as string
-				return (
-					<StatusEditField
-						onSave={(value) => {
-							updateCell(row?.id, column?.id, value)
-							setEditingCell(null)
-						}}
-						initialValue={statusId}
-						statusList={statusList}
-					/>
-				)
+				const statusInfo = statusList?.find((opt) => opt.id === statusId)
+
+				return <StatusBadge status={statusInfo} />
 			},
 		},
 		{
@@ -157,9 +132,7 @@ export default function TableView({
 					>
 						<div className="flex gap-1">
 							{tags?.slice(0, 3)?.map((tag) => (
-								<Badge className="rounded-full" key={tag.id}>
-									{tag.name}
-								</Badge>
+								<TagBadge tag={tag} />
 							))}
 						</div>
 					</div>
@@ -171,14 +144,11 @@ export default function TableView({
 			header: 'Date',
 			cell: ({ getValue, row, column }) => {
 				const date = getValue() as string
+
 				return (
-					<DateEditField
-						initialValue={date}
-						onSave={(value) => {
-							updateCell(row?.id, column?.id, value)
-							setEditingCell(null)
-						}}
-					/>
+					<button className="h-full w-full px-3 flex items-center cursor-pointer data-[state=open]:outline-2 outline-primary">
+						{date ? <p className="whitespace-nowrap">{formatDate(date)}</p> : null}
+					</button>
 				)
 			},
 		},
@@ -230,7 +200,7 @@ export default function TableView({
 		<DataTable
 			columns={columns}
 			data={filteredTasks}
-			// onRowClick={(row) => onViewTask?.(row.original)}
+			onRowClick={(row) => onViewTask(row.id)}
 		/>
 	)
 }

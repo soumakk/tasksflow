@@ -6,7 +6,15 @@ import invariant from 'tiny-invariant'
 import TaskCard from './TaskCard'
 import { Badge } from '@/components/ui/badge'
 
-export default function StatusColumn({ status, tasks }: { status: IStatus; tasks: ITask[] }) {
+export default function StatusColumn({
+	status,
+	tasks,
+	onViewTask,
+}: {
+	status: IStatus
+	tasks: ITask[]
+	onViewTask: (taskId: string) => void
+}) {
 	const colRef = useRef(null)
 	const [isDraggedOver, setIsDraggedOver] = useState(false)
 
@@ -43,7 +51,7 @@ export default function StatusColumn({ status, tasks }: { status: IStatus; tasks
 			</Badge>
 
 			{tasks?.map((task) => (
-				<TaskCard task={task} key={task.id} />
+				<TaskCard task={task} key={task.id} onViewTask={onViewTask} />
 			))}
 		</div>
 	)

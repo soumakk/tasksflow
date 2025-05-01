@@ -9,7 +9,7 @@ import { PriorityOptions } from '@/lib/data'
 import { TaskPriority } from '@/types/tasks'
 import { useState } from 'react'
 
-export default function PriorityEditField({
+export default function PriorityField({
 	onSave,
 	initialValue,
 }: {
@@ -22,16 +22,16 @@ export default function PriorityEditField({
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
-				<button className="w-full h-full flex items-center gap-2 px-3 cursor-pointer data-[state=open]:outline-2 outline-primary">
+				<button className="flex items-center text-sm gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
 					{selected ? (
 						<>
-							<PriorityFlag priority={selected as TaskPriority} />
+							<PriorityFlag priority={selected as TaskPriority} className="h-5 w-5" />
 							<span>{selectedLabel}</span>
 						</>
 					) : null}
 				</button>
 			</DropdownMenuTrigger>
-			<DropdownMenuContent className="w-auto">
+			<DropdownMenuContent className="w-auto" align="start">
 				{PriorityOptions?.map((opt) => (
 					<DropdownMenuItem
 						key={opt.value}

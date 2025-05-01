@@ -18,10 +18,12 @@ export default function BoardView({
 	statusList,
 	tagsList,
 	tasksList,
+	onViewTask,
 }: {
 	tasksList: ITask[]
 	statusList: IStatus[]
 	tagsList: ITag[]
+	onViewTask: (taskId: string) => void
 }) {
 	const [columnData, setColumnData] = useAtom(boardColumnsAtom)
 
@@ -184,6 +186,7 @@ export default function BoardView({
 						status={status}
 						key={status.id}
 						tasks={taskIds?.map((taskId) => tasksList?.find((t) => t.id === taskId))}
+						onViewTask={onViewTask}
 					/>
 				)
 			})}

@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 
-export default function TextEditField({
+export default function TextField({
 	onSave,
 	initialValue,
 }: {
@@ -10,17 +10,12 @@ export default function TextEditField({
 	const [text, setText] = useState(initialValue)
 	return (
 		<input
-			className="h-full w-full px-3 focus:outline-2 outline-primary"
+			className="text-2xl font-medium w-full focus:outline-2 outline-primary p-2"
 			defaultValue={initialValue}
 			onBlur={() => onSave(text)}
 			value={text}
 			onChange={(e) => setText(e.target.value)}
-			onKeyDown={(e) => {
-				if (e.key === 'Enter') {
-					onSave(text)
-				}
-			}}
-			autoFocus
+			placeholder="Untitled"
 		/>
 	)
 }
