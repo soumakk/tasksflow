@@ -22,7 +22,7 @@ export default function PriorityField({
 	return (
 		<DropdownMenu modal={false}>
 			<DropdownMenuTrigger asChild>
-				<button className="flex items-center text-sm gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
+				<button className="flex w-full items-center text-sm gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
 					{selected ? (
 						<>
 							<PriorityFlag priority={selected as TaskPriority} className="h-5 w-5" />

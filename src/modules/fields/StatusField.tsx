@@ -19,8 +19,10 @@ import { IStatus } from '@/types/tasks'
 import { useForm } from '@tanstack/react-form'
 import dayjs from 'dayjs'
 import { Pencil } from 'lucide-react'
+import { shuffle } from 'radash'
 import { useEffect, useState } from 'react'
 import { CirclePicker } from 'react-color'
+import CreateNewItem from './CreateNewItem'
 
 export default function StatusField({
 	onSave,
@@ -47,21 +49,23 @@ export default function StatusField({
 	)
 
 	async function handleSelect({
-		newStatus,
+		label,
 		statusId,
+		color,
 	}: {
 		statusId?: string
-		newStatus?: string
+		label?: string
+		color?: string
 	}) {
 		if (statusId) {
 			setCurrentStatus(statusId)
 			onSave(statusId)
 			setOpen(false)
-		} else if (newStatus && !statusId) {
+		} else if (label && !statusId) {
 			const newId = generateId()
 			await db.status.add({
-				color: '#151515',
-				name: newStatus,
+				color: color,
+				name: label,
 				created_at: dayjs().toISOString(),
 				updated_at: dayjs().toISOString(),
 				id: newId,
@@ -75,7 +79,7 @@ export default function StatusField({
 	return (
 		<Popover modal={true} open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<button className="flex items-center gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
+				<button className="flex w-full items-center gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
 					{currentStatus ? <StatusBadge status={statusInfo} /> : null}
 				</button>
 			</PopoverTrigger>
@@ -92,18 +96,12 @@ export default function StatusField({
 
 						<CommandGroup>
 							{filteredList?.length === 0 ? (
-								<CommandItem
-									onSelect={() => {
-										handleSelect({ newStatus: search })
+								<CreateNewItem
+									label={search}
+									onSelect={(label, color) => {
+										handleSelect({ label, color })
 									}}
-								>
-									Create{' '}
-									<Badge className="text-black bg-zinc-300 hover:bg-zinc-300 font-medium rounded-full gap-1 px-2 text-ellipsis overflow-hidden">
-										<p className="text-ellipsis overflow-hidden whitespace-nowrap">
-											{search}
-										</p>
-									</Badge>
-								</CommandItem>
+								/>
 							) : (
 								filteredList?.map((opt) => (
 									<CommandItem
@@ -111,7 +109,7 @@ export default function StatusField({
 										onSelect={() => {
 											handleSelect({ statusId: opt.id })
 										}}
-										className="[&>svg]:size-4 text-xs p-2 justify-between"
+										className="[&>svg]:size-4 text-xs justify-between"
 									>
 										<StatusBadge status={opt} />
 										{/* <EditStatus onSave={onSave} selected={opt} /> */}

@@ -1,21 +1,34 @@
 import React, { useState } from 'react'
 
+interface TextFieldProps extends React.ComponentProps<'input'> {
+	onSave: (value: string) => void
+	defaultValue: string
+	className?: string
+	placeholder?: string
+}
+
 export default function TextField({
 	onSave,
-	initialValue,
-}: {
-	onSave: (value: string) => void
-	initialValue: string
-}) {
-	const [text, setText] = useState(initialValue)
+	defaultValue,
+	className,
+	placeholder,
+	...rest
+}: TextFieldProps) {
+	const [text, setText] = useState(defaultValue)
 	return (
 		<input
-			className="text-2xl font-medium w-full focus:outline-2 outline-primary p-2"
-			defaultValue={initialValue}
+			className={className}
+			defaultValue={defaultValue}
 			onBlur={() => onSave(text)}
+			onKeyDown={(e) => {
+				if (e.key === 'Enter') {
+					onSave(text)
+				}
+			}}
 			value={text}
 			onChange={(e) => setText(e.target.value)}
-			placeholder="Untitled"
+			placeholder={placeholder}
+			{...rest}
 		/>
 	)
 }

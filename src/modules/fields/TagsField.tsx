@@ -14,6 +14,7 @@ import { generateId } from '@/lib/utils'
 import { ITag } from '@/types/tasks'
 import dayjs from 'dayjs'
 import { useEffect, useState } from 'react'
+import CreateNewItem from './CreateNewItem'
 
 export default function TagsField({
 	onSave,
@@ -38,7 +39,15 @@ export default function TagsField({
 		search ? opt.name?.toLowerCase().includes(search?.toLowerCase()) : true
 	)
 
-	async function handleSelect({ newTag, tagId }: { tagId?: string; newTag?: string }) {
+	async function handleSelect({
+		label,
+		tagId,
+		color,
+	}: {
+		tagId?: string
+		label?: string
+		color?: string
+	}) {
 		if (tagId) {
 			const temp = new Set(selectedTagIds)
 			if (temp.has(tagId)) {
@@ -51,13 +60,13 @@ export default function TagsField({
 			setSelectedTagsIds(tagIds)
 			onSave(tagIds)
 			// setOpen(false)
-		} else if (newTag && !tagId) {
+		} else if (label && !tagId) {
 			const newId = generateId()
 			const temp = new Set(selectedTagIds)
 
 			await db.tags.add({
-				color: '#151515',
-				name: newTag,
+				color: color,
+				name: label,
 				created_at: dayjs().toISOString(),
 				id: newId,
 			})
@@ -76,7 +85,7 @@ export default function TagsField({
 	return (
 		<Popover modal={true} open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<button className="flex flex-wrap items-center gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
+				<button className="w-full flex flex-wrap items-center gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
 					{selectedTagIds?.length ? (
 						selectedTags?.map((tag) => <TagBadge tag={tag} />)
 					) : (
@@ -97,18 +106,12 @@ export default function TagsField({
 
 						<CommandGroup>
 							{filteredList?.length === 0 ? (
-								<CommandItem
-									onSelect={() => {
-										handleSelect({ newTag: search })
+								<CreateNewItem
+									label={search}
+									onSelect={(label, color) => {
+										handleSelect({ label, color })
 									}}
-								>
-									Create{' '}
-									<Badge className="text-black bg-zinc-300 hover:bg-zinc-300 font-medium rounded-full gap-1 px-2 text-ellipsis overflow-hidden">
-										<p className="text-ellipsis overflow-hidden whitespace-nowrap">
-											{search}
-										</p>
-									</Badge>
-								</CommandItem>
+								/>
 							) : (
 								filteredList?.map((opt) => (
 									<CommandItem
@@ -116,7 +119,7 @@ export default function TagsField({
 										onSelect={() => {
 											handleSelect({ tagId: opt.id })
 										}}
-										className="[&>svg]:size-4 text-xs p-2 justify-between"
+										className="[&>svg]:size-4 text-xs justify-between"
 									>
 										<TagBadge tag={opt} />
 										{/* <EditStatus onSave={onSave} selected={opt} /> */}

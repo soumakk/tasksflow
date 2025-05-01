@@ -13,7 +13,7 @@ export default function DateField({
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
-				<button className="p-1 text-sm flex items-center cursor-pointer data-[state=open]:outline-2 outline-primary">
+				<button className="p-1 w-full text-sm flex items-center cursor-pointer data-[state=open]:outline-2 outline-primary">
 					{initialValue ? (
 						<p className="whitespace-nowrap">{formatDate(initialValue)}</p>
 					) : (

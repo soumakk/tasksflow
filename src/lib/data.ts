@@ -22,31 +22,70 @@ export const PriorityOptions = [
 export const defaultStatus: IStatus[] = [
 	{
 		id: 's-1',
-		name: 'Todo',
-		color: '#FF5733',
-		created_at: '2025-03-08T10:00:00Z',
-		updated_at: '2025-03-08T10:00:00Z',
+		name: 'To Do',
+		color: '#FFB800', // Amber
+		created_at: '2025-01-01T00:00:00Z',
+		updated_at: '2025-01-01T00:00:00Z',
 	},
 	{
 		id: 's-2',
 		name: 'In Progress',
-		color: '#FFC300',
-		created_at: '2025-03-08T10:00:00Z',
-		updated_at: '2025-03-08T10:00:00Z',
+		color: '#2979FF', // Blue
+		created_at: '2025-01-01T00:00:00Z',
+		updated_at: '2025-01-01T00:00:00Z',
 	},
 	{
 		id: 's-3',
-		name: 'Done',
-		color: '#28A745',
-		created_at: '2025-03-08T10:00:00Z',
-		updated_at: '2025-03-08T10:00:00Z',
+		name: 'Completed',
+		color: '#00C853', // Green
+		created_at: '2025-01-01T00:00:00Z',
+		updated_at: '2025-01-01T00:00:00Z',
 	},
 ]
 
 export const defaultTags: ITag[] = [
-	{ id: '1', name: 'Urgent', color: '#D9534F', created_at: '2025-03-08T10:00:00Z' },
-	{ id: '2', name: 'Bug', color: '#F0AD4E', created_at: '2025-03-08T10:00:00Z' },
-	{ id: '3', name: 'Feature', color: '#5BC0DE', created_at: '2025-03-08T10:00:00Z' },
+	{
+		id: 't-1',
+		name: 'Bug',
+		color: '#D32F2F', // Red
+		created_at: '2025-01-02T00:00:00Z',
+	},
+	{
+		id: 't-2',
+		name: 'Design',
+		color: '#F06292', // Pink
+		created_at: '2025-01-02T00:00:00Z',
+	},
+	{
+		id: 't-3',
+		name: 'Meeting',
+		color: '#BA68C8', // Purple
+		created_at: '2025-01-02T00:00:00Z',
+	},
+	{
+		id: 't-4',
+		name: 'Research',
+		color: '#4DB6AC', // Teal
+		created_at: '2025-01-02T00:00:00Z',
+	},
+	{
+		id: 't-5',
+		name: 'DevOps',
+		color: '#FFD54F', // Yellow
+		created_at: '2025-01-02T00:00:00Z',
+	},
+	{
+		id: 't-6',
+		name: 'Refactor',
+		color: '#90A4AE', // Blue Grey
+		created_at: '2025-01-02T00:00:00Z',
+	},
+	{
+		id: 't-7',
+		name: 'Feature',
+		color: '#4CAF50', // Green
+		created_at: '2025-01-02T00:00:00Z',
+	},
 ]
 
 export const defaultTasks: ITask[] = [
@@ -59,236 +98,173 @@ export const defaultTasks: ITask[] = [
 		due_date: '2025-03-10T00:00:00Z',
 		status_id: 's-1',
 		updated_at: '2025-03-08T10:05:00Z',
-		tag_ids: [],
+		tag_ids: ['t-1'],
+		sub_tasks: [
+			{ id: 'st-1', title: 'Debug mobile auth', completed: false },
+			{ id: 'st-2', title: 'Test on iOS & Android', completed: false },
+		],
 	},
 	{
 		id: '2',
-		created_at: '2025-03-08T10:06:00Z',
-		title: 'Design homepage UI',
-		description: 'Revamp the homepage layout',
+		created_at: '2025-03-05T09:00:00Z',
+		title: 'Design onboarding flow',
+		description: 'Create wireframes for new user onboarding',
 		priority: 'normal',
-		due_date: '2025-03-15T00:00:00Z',
-		status_id: 's-1',
-		updated_at: '2025-03-08T10:06:00Z',
-		tag_ids: [],
+		due_date: '2025-03-12T00:00:00Z',
+		status_id: 's-2',
+		updated_at: '2025-03-06T11:30:00Z',
+		tag_ids: ['t-2', 't-3'],
+		sub_tasks: [
+			{ id: 'st-3', title: 'Sketch flow', completed: true },
+			{ id: 'st-4', title: 'Create Figma mockups', completed: false },
+		],
 	},
 	{
 		id: '3',
-		created_at: '2025-03-08T10:07:00Z',
-		title: 'Database optimization',
-		description: 'Improve query performance',
-		priority: 'high',
-		due_date: '2025-03-12T00:00:00Z',
-		status_id: 's-2',
-		updated_at: '2025-03-08T10:07:00Z',
-		tag_ids: [],
-	},
-	{
-		id: '4',
-		created_at: '2025-03-08T10:08:00Z',
-		title: 'Update user profile API',
+		created_at: '2025-03-01T14:00:00Z',
+		title: 'Update landing page',
 		description: null,
 		priority: 'low',
 		due_date: '2025-03-20T00:00:00Z',
-		status_id: 's-2',
-		updated_at: '2025-03-08T10:08:00Z',
+		status_id: 's-3',
+		updated_at: '2025-03-01T14:00:00Z',
 		tag_ids: [],
+		sub_tasks: [],
+	},
+	{
+		id: '4',
+		created_at: '2025-03-09T08:00:00Z',
+		title: 'Research competitor apps',
+		description: 'Gather insights from top 5 competitors',
+		priority: 'normal',
+		due_date: '2025-03-15T00:00:00Z',
+		status_id: 's-1',
+		updated_at: '2025-03-09T08:00:00Z',
+		tag_ids: ['t-4'],
+		sub_tasks: [{ id: 'st-5', title: 'List features of each app', completed: false }],
 	},
 	{
 		id: '5',
-		created_at: '2025-03-08T10:09:00Z',
-		title: 'Implement dark mode',
-		description: 'Add dark mode toggle in settings',
-		priority: 'normal',
-		due_date: '2025-03-18T00:00:00Z',
-		status_id: 's-1',
-		updated_at: '2025-03-08T10:09:00Z',
-		tag_ids: [],
+		created_at: '2025-03-07T13:00:00Z',
+		title: 'Deploy staging server',
+		description: 'Set up new staging environment on AWS',
+		priority: 'urgent',
+		due_date: '2025-03-08T00:00:00Z',
+		status_id: 's-2',
+		updated_at: '2025-03-07T14:00:00Z',
+		tag_ids: ['t-5'],
+		sub_tasks: [
+			{ id: 'st-6', title: 'Provision EC2 instance', completed: true },
+			{ id: 'st-7', title: 'Deploy backend services', completed: false },
+		],
 	},
 	{
 		id: '6',
-		created_at: '2025-03-08T10:10:00Z',
-		title: 'Fix checkout bug',
-		description: 'Users unable to complete purchases',
-		priority: 'urgent',
-		due_date: '2025-03-09T00:00:00Z',
-		status_id: 's-2',
-		updated_at: '2025-03-08T10:10:00Z',
-		tag_ids: [],
+		created_at: '2025-03-02T10:00:00Z',
+		title: 'Write unit tests',
+		description: 'Improve test coverage for user module',
+		priority: 'high',
+		due_date: '2025-03-11T00:00:00Z',
+		status_id: 's-3',
+		updated_at: '2025-03-04T09:00:00Z',
+		tag_ids: ['t-1', 't-6'],
+		sub_tasks: [],
 	},
 	{
 		id: '7',
-		created_at: '2025-03-08T10:11:00Z',
-		title: 'Optimize images',
-		description: 'Reduce image size for better loading',
-		priority: 'low',
-		due_date: '2025-03-22T00:00:00Z',
-		status_id: 's-3',
-		updated_at: '2025-03-08T10:11:00Z',
-		tag_ids: [],
+		created_at: '2025-03-06T15:00:00Z',
+		title: 'Team meeting prep',
+		description: 'Prepare agenda and slides',
+		priority: 'normal',
+		due_date: '2025-03-07T00:00:00Z',
+		status_id: 's-2',
+		updated_at: '2025-03-06T16:00:00Z',
+		tag_ids: ['t-3'],
+		sub_tasks: [
+			{ id: 'st-8', title: 'Draft agenda', completed: true },
+			{ id: 'st-9', title: 'Make slide deck', completed: false },
+		],
 	},
 	{
 		id: '8',
-		created_at: '2025-03-08T10:12:00Z',
-		title: 'Write unit tests',
-		description: 'Increase code coverage',
-		priority: 'normal',
-		due_date: '2025-03-25T00:00:00Z',
-		status_id: 's-3',
-		updated_at: '2025-03-08T10:12:00Z',
+		created_at: '2025-03-10T11:00:00Z',
+		title: 'Optimize images',
+		description: 'Compress and lazy-load homepage images',
+		priority: 'low',
+		due_date: '2025-03-22T00:00:00Z',
+		status_id: 's-1',
+		updated_at: '2025-03-10T11:00:00Z',
 		tag_ids: [],
+		sub_tasks: [],
 	},
 	{
 		id: '9',
-		created_at: '2025-03-08T10:13:00Z',
-		title: 'Deploy new version',
-		description: 'Deploy the latest build to production',
+		created_at: '2025-03-11T09:00:00Z',
+		title: 'Add forgot password feature',
+		description: 'Implement password recovery flow',
 		priority: 'high',
-		due_date: '2025-03-08T23:59:00Z',
-		status_id: 's-3',
-		updated_at: '2025-03-08T10:13:00Z',
-		tag_ids: [],
+		due_date: '2025-03-14T00:00:00Z',
+		status_id: 's-2',
+		updated_at: '2025-03-11T10:00:00Z',
+		tag_ids: ['t-1', 't-7'],
+		sub_tasks: [
+			{ id: 'st-10', title: 'Create API endpoint', completed: false },
+			{ id: 'st-11', title: 'Build frontend modal', completed: false },
+		],
 	},
 	{
 		id: '10',
-		created_at: '2025-03-08T10:14:00Z',
-		title: 'Refactor CSS',
-		description: 'Clean up unused styles',
-		priority: 'low',
-		due_date: '2025-03-30T00:00:00Z',
-		status_id: 's-1',
-		updated_at: '2025-03-08T10:14:00Z',
-		tag_ids: [],
+		created_at: '2025-03-04T07:30:00Z',
+		title: 'Refactor settings page',
+		description: 'Simplify layout and clean up unused code',
+		priority: 'normal',
+		due_date: '2025-03-16T00:00:00Z',
+		status_id: 's-3',
+		updated_at: '2025-03-04T07:30:00Z',
+		tag_ids: ['t-4', 't-6'],
+		sub_tasks: [],
 	},
-	// {
-	// 	id: '11',
-	// 	created_at: '2025-03-08T10:15:00Z',
-	// 	title: 'Improve accessibility',
-	// 	description: 'Ensure compliance with WCAG',
-	// 	priority: 'high',
-	// 	due_date: '2025-03-28T00:00:00Z',
-	// 	status_id: 's-2',
-	// 	updated_at: '2025-03-08T10:15:00Z',
-	// 	tag_ids: [],
-	// },
-	// {
-	// 	id: '12',
-	// 	created_at: '2025-03-08T10:16:00Z',
-	// 	title: 'Update documentation',
-	// 	description: 'Refresh API docs',
-	// 	priority: 'normal',
-	// 	due_date: '2025-03-24T00:00:00Z',
-	// 	status_id: 's-1',
-	// 	updated_at: '2025-03-08T10:16:00Z',
-	// 	tag_ids: [],
-	// },
-	// {
-	// 	id: '13',
-	// 	created_at: '2025-03-08T10:17:00Z',
-	// 	title: 'Fix 404 error',
-	// 	description: 'Resolve broken links',
-	// 	priority: 'urgent',
-	// 	due_date: '2025-03-19T00:00:00Z',
-	// 	status_id: 's-2',
-	// 	updated_at: '2025-03-08T10:17:00Z',
-	// 	tag_ids: [],
-	// },
-	// {
-	// 	id: '14',
-	// 	created_at: '2025-03-08T10:18:00Z',
-	// 	title: 'Enhance search functionality',
-	// 	description: 'Improve search algorithm',
-	// 	priority: 'high',
-	// 	due_date: '2025-03-26T00:00:00Z',
-	// 	status_id: 's-1',
-	// 	updated_at: '2025-03-08T10:18:00Z',
-	// 	tag_ids: [],
-	// },
-	// {
-	// 	id: '15',
-	// 	created_at: '2025-03-08T10:19:00Z',
-	// 	title: 'Integrate payment gateway',
-	// 	description: 'Add Stripe support',
-	// 	priority: 'high',
-	// 	due_date: '2025-03-29T00:00:00Z',
-	// 	status_id: 's-2',
-	// 	updated_at: '2025-03-08T10:19:00Z',
-	// 	tag_ids: [],
-	// },
-	// {
-	// 	id: '16',
-	// 	created_at: '2025-03-08T10:20:00Z',
-	// 	title: 'Implement two-factor authentication',
-	// 	description: 'Enhance security with 2FA',
-	// 	priority: 'high',
-	// 	due_date: '2025-04-01T00:00:00Z',
-	// 	status_id: 's-1',
-	// 	updated_at: '2025-03-08T10:20:00Z',
-	// 	tag_ids: [],
-	// },
-	// {
-	// 	id: '17',
-	// 	created_at: '2025-03-08T10:21:00Z',
-	// 	title: 'Improve caching strategy',
-	// 	description: 'Optimize site performance',
-	// 	priority: 'normal',
-	// 	due_date: '2025-04-05T00:00:00Z',
-	// 	status_id: 's-2',
-	// 	updated_at: '2025-03-08T10:21:00Z',
-	// 	tag_ids: [],
-	// },
-	// {
-	// 	id: '18',
-	// 	created_at: '2025-03-08T10:22:00Z',
-	// 	title: 'Upgrade database version',
-	// 	description: 'Migrate to latest PostgreSQL',
-	// 	priority: 'high',
-	// 	due_date: '2025-04-10T00:00:00Z',
-	// 	status_id: 's-3',
-	// 	updated_at: '2025-03-08T10:22:00Z',
-	// 	tag_ids: [],
-	// },
-	// {
-	// 	id: '19',
-	// 	created_at: '2025-03-08T10:23:00Z',
-	// 	title: 'Develop mobile app prototype',
-	// 	description: 'Create an MVP for Android',
-	// 	priority: 'urgent',
-	// 	due_date: '2025-04-12T00:00:00Z',
-	// 	status_id: 's-1',
-	// 	updated_at: '2025-03-08T10:23:00Z',
-	// 	tag_ids: [],
-	// },
-	// {
-	// 	id: '20',
-	// 	created_at: '2025-03-08T10:24:00Z',
-	// 	title: 'Implement chatbot support',
-	// 	description: 'Add AI-driven chatbot',
-	// 	priority: 'high',
-	// 	due_date: '2025-04-15T00:00:00Z',
-	// 	status_id: 's-2',
-	// 	updated_at: '2025-03-08T10:24:00Z',
-	// 	tag_ids: [],
-	// },
 ]
 
 export const StatusColors = [
-	'#f44336',
-	'#e91e63',
-	'#9c27b0',
-	'#673ab7',
-	'#3f51b5',
-	'#2196f3',
-	'#03a9f4',
-	'#00bcd4',
-	'#009688',
-	'#4caf50',
-	'#8bc34a',
-	'#cddc39',
-	'#ffeb3b',
-	'#ffc107',
-	'#ff9800',
-	'#ff5722',
-	'#795548',
-	'#607d8b',
+	'#F44336', // Red
+	'#E91E63', // Pink
+	'#9C27B0', // Purple
+	'#673AB7', // Deep Purple
+	'#3F51B5', // Indigo
+	'#2196F3', // Blue
+	'#03A9F4', // Light Blue
+	'#00BCD4', // Cyan
+	'#009688', // Teal
+	'#4CAF50', // Green
+	'#8BC34A', // Light Green
+	'#CDDC39', // Lime
+	'#FFEB3B', // Yellow
+	'#FFC107', // Amber
+	'#FF9800', // Orange
+	'#FF5722', // Deep Orange
+	'#795548', // Brown
+	'#9E9E9E', // Grey
+	'#607D8B', // Blue Grey
+	'#000000', // Black
+	'#B71C1C', // Dark Red
+	'#880E4F', // Dark Pink
+	'#4A148C', // Dark Purple
+	'#311B92', // Deep Indigo
+	'#1A237E', // Navy Blue
+	'#01579B', // Strong Blue
+	'#006064', // Dark Cyan
+	'#1B5E20', // Dark Green
+	'#33691E', // Olive Green
+	'#827717', // Dark Lime
+	'#F57F17', // Mustard
+	'#E65100', // Burnt Orange
+	'#BF360C', // Brick
+	'#3E2723', // Coffee Brown
+	'#616161', // Dark Grey
+	'#455A64', // Steel Blue Grey
+	'#90CAF9', // Soft Blue
+	'#A5D6A7', // Soft Green
+	'#FFF59D', // Soft Yellow
+	'#FFAB91', // Soft Orange
 ]

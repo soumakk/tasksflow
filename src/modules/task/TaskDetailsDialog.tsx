@@ -1,14 +1,15 @@
-import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/ui/dialog'
+import { Dialog, DialogContent } from '@/components/ui/dialog'
 import { db } from '@/lib/db'
-import { useStatus, useTags, useTasks } from '@/lib/hooks/dexie'
+import { useStatus, useTags } from '@/lib/hooks/dexie'
 import { ITask } from '@/types/tasks'
 import dayjs from 'dayjs'
+import DateField from '../fields/DateField'
 import PriorityField from '../fields/PriorityField'
 import StatusField from '../fields/StatusField'
-import DateField from '../fields/DateField'
 import TagsField from '../fields/TagsField'
 import TextField from '../fields/TextField'
 import TextareaField from '../fields/TextareaField'
+import SubTasksList from './SubTasksList'
 
 export default function TaskDetailsDialog({
 	open,
@@ -22,7 +23,7 @@ export default function TaskDetailsDialog({
 	const { statusList, isStatusLoading } = useStatus()
 	const { tagsList } = useTags()
 
-	async function updateCell(id: string, key: string, value: string | string[]) {
+	async function updateCell(id: string, key: string, value: any) {
 		await db.tasks.update(id, { ...task, [key]: value, updated_at: dayjs().toISOString() })
 	}
 
@@ -39,7 +40,9 @@ export default function TaskDetailsDialog({
 					<div className="col-span-3">
 						<div className="">
 							<TextField
-								initialValue={task.title}
+								className="text-2xl font-medium w-full focus:outline-2 outline-primary p-2"
+								placeholder="Untitled"
+								defaultValue={task.title}
 								onSave={(value) => {
 									updateCell(task?.id, 'title', value)
 								}}
@@ -53,6 +56,8 @@ export default function TaskDetailsDialog({
 								}}
 							/>
 						</div>
+
+						<SubTasksList task={task} />
 					</div>
 
 					<div className="col-span-2 flex flex-col">

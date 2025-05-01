@@ -8,6 +8,13 @@ export interface ITask {
 	status_id: string
 	tag_ids: string[]
 	updated_at: string
+	sub_tasks: ISubTask[]
+}
+
+export interface ISubTask {
+	id: string
+	title: string
+	completed: boolean
 }
 
 export interface IStatus {
