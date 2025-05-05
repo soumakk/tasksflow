@@ -5,7 +5,17 @@ import { db } from '@/lib/db'
 import { ColumnDef } from '@tanstack/react-table'
 import dayjs from 'dayjs'
 import { useAtomValue } from 'jotai'
-import { Trash2 } from 'lucide-react'
+import {
+	ALargeSmall,
+	Calendar1,
+	Disc,
+	Flag,
+	Hourglass,
+	Tag,
+	Tags,
+	Trash2,
+	Type,
+} from 'lucide-react'
 import { useMemo, useState } from 'react'
 import { formatDate } from '../../lib/utils'
 import { IStatus, ITag, ITask, TaskPriority } from '../../types/tasks'
@@ -52,8 +62,11 @@ export default function TableView({
 				return (
 					<div className="h-full w-full items-center justify-center hidden group-hover/row:flex">
 						<Trash2
-							className="h-3.5 w-3.5 text-red-500"
-							onClick={() => deleteRow(row?.id)}
+							className="h-3.5 w-3.5 text-red-500 cursor-pointer"
+							onClick={(e) => {
+								e.stopPropagation()
+								deleteRow(row?.id)
+							}}
 						/>
 					</div>
 				)
@@ -62,7 +75,12 @@ export default function TableView({
 		},
 		{
 			accessorKey: 'title',
-			header: 'Title',
+			header: () => (
+				<p className="flex gap-2 items-center">
+					<Type className="h-4 w-4" />
+					<span>Title</span>
+				</p>
+			),
 			cell: ({ getValue, row, column }) => {
 				const isEditing = editingCell?.row === row?.id && editingCell?.col === column?.id
 				const value = getValue() as string
@@ -75,24 +93,14 @@ export default function TableView({
 			},
 			size: 300,
 		},
-		// {
-		// 	accessorKey: 'description',
-		// 	header: 'Description',
-		// 	cell: ({ getValue, row, column }) => {
-		// 		const isEditing = editingCell?.row === row?.id && editingCell?.col === column?.id
-		// 		const value = getValue() as string
-
-		// 		return (
-		// 			<div className="h-full w-full px-3 flex items-center cursor-pointer">
-		// 				<p className="whitespace-nowrap">{value}</p>
-		// 			</div>
-		// 		)
-		// 	},
-		// 	size: 300,
-		// },
 		{
 			accessorKey: 'priority',
-			header: 'Priority',
+			header: () => (
+				<p className="flex gap-2 items-center">
+					<Flag className="h-4 w-4" />
+					<span>Priority</span>
+				</p>
+			),
 			cell: ({ getValue, row, column }) => {
 				const priority = getValue() as TaskPriority
 				const selectedLabel = PriorityOptions?.find((opt) => opt.value === priority)?.label
@@ -110,7 +118,12 @@ export default function TableView({
 		},
 		{
 			accessorKey: 'status_id',
-			header: 'Status',
+			header: () => (
+				<p className="flex gap-2 items-center">
+					<Disc className="h-4 w-4" />
+					<span>Status</span>
+				</p>
+			),
 			cell: ({ getValue, row, column }) => {
 				const statusId = getValue() as string
 				const statusInfo = statusList?.find((opt) => opt.id === statusId)
@@ -120,7 +133,12 @@ export default function TableView({
 		},
 		{
 			accessorKey: 'tag_ids',
-			header: 'Tags',
+			header: () => (
+				<p className="flex gap-2 items-center">
+					<Tag className="h-4 w-4" />
+					<span>Tags</span>
+				</p>
+			),
 			cell: ({ getValue, row, column }) => {
 				const tagIds = getValue() as string[]
 				if (!tagIds?.length) return null
@@ -141,7 +159,12 @@ export default function TableView({
 		},
 		{
 			accessorKey: 'due_date',
-			header: 'Date',
+			header: () => (
+				<p className="flex gap-2 items-center whitespace-nowrap">
+					<Calendar1 className="h-4 w-4" />
+					<span>Due Date</span>
+				</p>
+			),
 			cell: ({ getValue, row, column }) => {
 				const date = getValue() as string
 
@@ -154,7 +177,12 @@ export default function TableView({
 		},
 		{
 			accessorKey: 'updated_at',
-			header: 'Last updated',
+			header: () => (
+				<p className="flex gap-2 items-center whitespace-nowrap">
+					<Hourglass className="h-4 w-4" />
+					<span>Last updated</span>
+				</p>
+			),
 			cell: ({ getValue, row, column }) => {
 				const updated = getValue() as string
 				if (!updated) return null

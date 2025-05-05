@@ -1,10 +1,10 @@
+import StatusBadge from '@/components/widgets/StatusBadge'
 import { cn } from '@/lib/utils'
 import { IStatus, ITask } from '@/types/tasks'
 import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { useRef, useState, useEffect } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import invariant from 'tiny-invariant'
 import TaskCard from './TaskCard'
-import { Badge } from '@/components/ui/badge'
 
 export default function StatusColumn({
 	status,
@@ -36,19 +36,13 @@ export default function StatusColumn({
 	return (
 		<div
 			ref={colRef}
-			className={cn('bg-card p-2 w-60 rounded-lg border border-border/20', {
-				'bg-blue-50': isDraggedOver,
+			className={cn(' p-2 w-60 rounded-lg ', {
+				'ring-2 ring-primary': isDraggedOver,
 			})}
 		>
-			<Badge
-				className="text-black font-medium rounded-full mb-2"
-				style={{
-					color: status?.color,
-					backgroundColor: `${status?.color}1a`,
-				}}
-			>
-				{status?.name}
-			</Badge>
+			<div className="pb-2">
+				<StatusBadge status={status} />
+			</div>
 
 			{tasks?.map((task) => (
 				<TaskCard task={task} key={task.id} onViewTask={onViewTask} />

@@ -32,7 +32,7 @@ export default function TaskDetailsDialog({
 			<DialogContent className="overflow-hidden max-w-3xl sm:rounded-3xl p-6">
 				<button></button>
 
-				<div className="grid grid-cols-5 gap-8">
+				<div className="grid grid-cols-1 sm:grid-cols-5 gap-8">
 					<div className="col-span-3">
 						<div className="mb-3">
 							<TextField
@@ -56,8 +56,8 @@ export default function TaskDetailsDialog({
 						<SubTasksList task={task} />
 					</div>
 
-					<div className="col-span-2 flex flex-col">
-						<div className="pb-6 flex flex-col gap-2 items-start">
+					<div className="col-span-2 flex flex-col gap-3 sm:gap-6">
+						<div className="flex flex-col gap-2 items-start">
 							<label className="text-muted-foreground text-xs uppercase font-medium">
 								Due date
 							</label>
@@ -70,7 +70,7 @@ export default function TaskDetailsDialog({
 							/>
 						</div>
 
-						<div className="pb-6 flex flex-col gap-2 items-start">
+						<div className="flex flex-col gap-2 items-start">
 							<label className="text-muted-foreground text-xs uppercase font-medium">
 								Status
 							</label>
@@ -83,7 +83,7 @@ export default function TaskDetailsDialog({
 							/>
 						</div>
 
-						<div className="pb-6 flex flex-col gap-2 items-start">
+						<div className="flex flex-col gap-2 items-start">
 							<label className="text-muted-foreground text-xs uppercase font-medium">
 								Priority
 							</label>
@@ -95,7 +95,7 @@ export default function TaskDetailsDialog({
 							/>
 						</div>
 
-						<div className="pb-6 flex flex-col gap-2 items-start">
+						<div className="flex flex-col gap-2 items-start">
 							<label className="text-muted-foreground text-xs uppercase font-medium">
 								Tags
 							</label>

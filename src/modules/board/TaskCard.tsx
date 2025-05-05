@@ -1,4 +1,6 @@
 import PriorityFlag from '@/components/widgets/Flag'
+import TagBadge from '@/components/widgets/TagBadge'
+import { useTags } from '@/lib/hooks/dexie'
 import { cn, formatDate } from '@/lib/utils'
 import { ITask, TaskPriority } from '@/types/tasks'
 import {
@@ -8,7 +10,7 @@ import {
 import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/dist/types/types'
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { Calendar } from 'lucide-react'
+import { Calendar, Calendar1 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import invariant from 'tiny-invariant'
 
@@ -19,6 +21,7 @@ export default function TaskCard({
 	task: ITask
 	onViewTask: (taskId: string) => void
 }) {
+	const { tagsList } = useTags()
 	const taskRef = useRef(null)
 	const [isDragging, setIsDragging] = useState(false)
 	const [closestEdge, setClosestEdge] = useState(null)
@@ -69,25 +72,35 @@ export default function TaskCard({
 		)
 	}, [task.id])
 
+	const selectedTags = tagsList?.filter((tag) => task.tag_ids?.includes(tag.id))
+
 	return (
 		<div className="relative py-1">
 			<div
 				ref={taskRef}
-				className={cn('bg-background rounded p-2 text-xs shadow-xs', {
+				className={cn('bg-muted border border-border rounded-md p-3 text-xs shadow-xs', {
 					'opacity-50': isDragging,
 				})}
 				onClick={() => onViewTask(task.id)}
 			>
-				<p>{task.title}</p>
+				<p className="text-sm">{task.title}</p>
 
-				<div className="flex items-center gap-2 my-1">
-					<PriorityFlag priority={task.priority as TaskPriority} />
+				<div className="flex items-center gap-2 my-2">
+					<PriorityFlag priority={task.priority as TaskPriority} className="h-4 w-4" />
 					<span className="capitalize">{task.priority}</span>
 				</div>
 
-				<div className="flex items-center gap-2">
-					<Calendar className="h-3 w-3 text-zinc-500" />
-					<span>{formatDate(task.due_date)}</span>
+				{task.due_date ? (
+					<div className="flex items-center gap-2">
+						<Calendar1 className="h-4 w-4 text-muted-foreground" />
+						<span>{formatDate(task.due_date)}</span>
+					</div>
+				) : null}
+
+				<div className="flex gap-1 mt-2">
+					{selectedTags?.map((tag) => (
+						<TagBadge tag={tag} />
+					))}
 				</div>
 			</div>
 
