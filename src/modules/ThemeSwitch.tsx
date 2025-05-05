@@ -23,7 +23,7 @@ export default function ThemeSwitch() {
 			whileTap={{ scale: 0.98 }}
 			whileHover={{ scale: 1.05 }}
 			onClick={toggleTheme}
-			className="border border-border h-8 w-8 rounded-full flex items-center justify-center hover:bg-muted"
+			className="border border-border h-8 w-8 rounded-full flex items-center justify-center hover:bg-muted shrink-0"
 		>
 			{theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
 		</motion.button>
