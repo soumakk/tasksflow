@@ -51,6 +51,7 @@ function App() {
 			updated_at: dayjs().toISOString(),
 			id: newId,
 			tag_ids: [],
+			sub_tasks: [],
 		}
 		await db.tasks.add(newTask)
 		setSelectedTaskId(newId)

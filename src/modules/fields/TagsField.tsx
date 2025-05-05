@@ -85,7 +85,7 @@ export default function TagsField({
 	return (
 		<Popover modal={true} open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<button className="w-full flex flex-wrap items-center gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
+				<button className="w-full flex flex-wrap bg-muted rounded-sm border border-border items-center gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
 					{selectedTagIds?.length ? (
 						selectedTags?.map((tag) => <TagBadge tag={tag} />)
 					) : (

@@ -34,16 +34,20 @@ export default function SubTasksList({ task }: { task: ITask }) {
 		await updateCell(taskId, 'sub_tasks', temp)
 	}
 
-	const totalCount = task.sub_tasks.length
-	const completedCount = task.sub_tasks?.filter((st) => st.completed).length
+	const totalCount = task?.sub_tasks?.length ?? 0
+	const completedCount = task.sub_tasks?.filter((st) => st.completed)?.length ?? 0
 	const progress = (completedCount * 100) / totalCount
 
 	return (
-		<div className="py-5 border-t border-border">
-			<div className="flex items-center justify-between mb-2">
-				<label className="text-muted-foreground text-sm">Sub Tasks</label>
+		<div className="py-5">
+			<div className="flex items-center justify-between py-2 border-b border-border">
+				<label className="text-muted-foreground text-xs uppercase font-medium">
+					Sub Tasks
+				</label>
 
-				<CircularProgress progress={progress} size={20} strokeWidth={3} />
+				{totalCount > 0 ? (
+					<CircularProgress progress={progress} size={20} strokeWidth={3} />
+				) : null}
 			</div>
 
 			<ul>
@@ -70,6 +74,7 @@ export default function SubTasksList({ task }: { task: ITask }) {
 							className={cn('flex-1 outline-none', {
 								'line-through': st.completed,
 							})}
+							placeholder="What's on your mind"
 							onSave={(value) => {
 								handleSubtaskChange(task?.id, st.id, 'title', value)
 							}}
@@ -86,7 +91,7 @@ export default function SubTasksList({ task }: { task: ITask }) {
 
 				<button
 					onClick={() => handleAddNewSubtask(task.id)}
-					className="flex items-center gap-2 text-sm px-2 py-2 text-muted-foreground w-full cursor-pointer hover:bg-accent"
+					className="flex items-center gap-2 text-xs px-2 py-2 text-muted-foreground w-full cursor-pointer hover:bg-accent"
 				>
 					<PlusIcon className="h-4 w-4" />
 					<span>Add Subtask</span>

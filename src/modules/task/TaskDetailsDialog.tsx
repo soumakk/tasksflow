@@ -30,17 +30,13 @@ export default function TaskDetailsDialog({
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
 			<DialogContent className="overflow-hidden max-w-3xl sm:rounded-3xl p-6">
-				{/* <DialogHeader>
-					<DialogTitle></DialogTitle>
-				</DialogHeader> */}
-
 				<button></button>
 
 				<div className="grid grid-cols-5 gap-8">
 					<div className="col-span-3">
-						<div className="">
+						<div className="mb-3">
 							<TextField
-								className="text-2xl font-medium w-full focus:outline-2 outline-primary p-2"
+								className="text-xl font-medium w-full focus:outline-2 outline-primary p-2 "
 								placeholder="Untitled"
 								defaultValue={task.title}
 								onSave={(value) => {
@@ -62,17 +58,22 @@ export default function TaskDetailsDialog({
 
 					<div className="col-span-2 flex flex-col">
 						<div className="pb-6 flex flex-col gap-2 items-start">
-							<label className="text-muted-foreground text-sm">Priority</label>
-							<PriorityField
+							<label className="text-muted-foreground text-xs uppercase font-medium">
+								Due date
+							</label>
+
+							<DateField
+								initialValue={task?.due_date}
 								onSave={(value) => {
-									updateCell(task?.id, 'priority', value)
+									updateCell(task?.id, 'due_date', value)
 								}}
-								initialValue={task.priority}
 							/>
 						</div>
 
 						<div className="pb-6 flex flex-col gap-2 items-start">
-							<label className="text-muted-foreground text-sm">Status</label>
+							<label className="text-muted-foreground text-xs uppercase font-medium">
+								Status
+							</label>
 							<StatusField
 								onSave={(value) => {
 									updateCell(task?.id, 'status_id', value)
@@ -83,24 +84,27 @@ export default function TaskDetailsDialog({
 						</div>
 
 						<div className="pb-6 flex flex-col gap-2 items-start">
-							<label className="text-muted-foreground text-sm">Tags</label>
+							<label className="text-muted-foreground text-xs uppercase font-medium">
+								Priority
+							</label>
+							<PriorityField
+								onSave={(value) => {
+									updateCell(task?.id, 'priority', value)
+								}}
+								initialValue={task.priority}
+							/>
+						</div>
+
+						<div className="pb-6 flex flex-col gap-2 items-start">
+							<label className="text-muted-foreground text-xs uppercase font-medium">
+								Tags
+							</label>
 							<TagsField
 								onSave={(value) => {
 									updateCell(task?.id, 'tag_ids', value)
 								}}
 								initialTags={task?.tag_ids}
 								tagsList={tagsList}
-							/>
-						</div>
-
-						<div className="pb-6 flex flex-col gap-2 items-start">
-							<label className="text-muted-foreground text-sm">Due date</label>
-
-							<DateField
-								initialValue={task?.due_date}
-								onSave={(value) => {
-									updateCell(task?.id, 'due_date', value)
-								}}
 							/>
 						</div>
 					</div>

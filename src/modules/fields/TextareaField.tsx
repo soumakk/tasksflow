@@ -10,7 +10,7 @@ export default function TextareaField({
 	const [text, setText] = useState(initialValue)
 	return (
 		<textarea
-			className="text-sm w-full focus:outline-2 outline-primary p-2"
+			className="text-sm w-full focus:outline-2 outline-primary p-3 bg-muted border border-border rounded-sm"
 			defaultValue={initialValue}
 			onBlur={() => onSave(text)}
 			value={text}
