@@ -1,11 +1,11 @@
 import TableView from '@/modules/table/TableView'
 import dayjs from 'dayjs'
 import { useAtom, useSetAtom } from 'jotai'
-import { Columns3, ListFilter, Loader, PlusIcon, Table } from 'lucide-react'
+import { ArrowUpDown, Columns3, ListFilter, Loader, PlusIcon, Table } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from './components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
-import { boardColumnsAtom, currentTabAtom } from './lib/atoms'
+import { boardColumnsAtom, currentTabAtom, isFiltersOpenAtom } from './lib/atoms'
 import { db } from './lib/db'
 import { useStatus, useTags, useTasks } from './lib/hooks/dexie'
 import { cn, generateId } from './lib/utils'
@@ -15,9 +15,10 @@ import TaskDetailsDialog from './modules/task/TaskDetailsDialog'
 import ThemeSwitch from './modules/ThemeSwitch'
 import Title from './modules/Title'
 import { ITask, TaskPriority } from './types/tasks'
+import SortFilter from './modules/table/SortFilter'
 
 function App() {
-	const [isFiltersOpen, setIsFiltersOpen] = useState(false)
+	const [isFiltersOpen, setIsFiltersOpen] = useAtom(isFiltersOpenAtom)
 	const [currentTab, setCurrentTab] = useAtom(currentTabAtom)
 	const [selectedTaskId, setSelectedTaskId] = useState(null)
 
@@ -80,14 +81,17 @@ function App() {
 						</TabsList>
 
 						<div className="flex items-center gap-2">
+							<SortFilter />
+
 							<button
 								onClick={() => setIsFiltersOpen((o) => !o)}
 								className={cn(
-									'h-8 w-8 rounded-full text-muted-foreground flex items-center justify-center hover:bg-muted hover:text-primary',
+									'h-8 px-3 rounded-full text-xs font-medium gap-1 border border-border text-muted-foreground flex items-center justify-center hover:bg-muted hover:text-primary',
 									{ 'text-primary': isFiltersOpen }
 								)}
 							>
 								<ListFilter className="h-4 w-4" />
+								<span>Filters</span>
 							</button>
 
 							<Button

@@ -10,9 +10,10 @@ import {
 import { Edge } from '@atlaskit/pragmatic-drag-and-drop-hitbox/dist/types/types'
 import { combine } from '@atlaskit/pragmatic-drag-and-drop/combine'
 import { draggable, dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element/adapter'
-import { Calendar, Calendar1 } from 'lucide-react'
+import { Calendar1 } from 'lucide-react'
 import { useEffect, useRef, useState } from 'react'
 import invariant from 'tiny-invariant'
+import SubTaskProgress from '../task/SubTaskProgress'
 
 export default function TaskCard({
 	task,
@@ -83,7 +84,10 @@ export default function TaskCard({
 				})}
 				onClick={() => onViewTask(task.id)}
 			>
-				<p className="text-sm">{task.title}</p>
+				<div className="flex items-start justify-between gap-2">
+					<p className="text-sm">{task.title}</p>
+					<SubTaskProgress subTasks={task?.sub_tasks} size={16} stroke={2} />
+				</div>
 
 				<div className="flex items-center gap-2 my-2">
 					<PriorityFlag priority={task.priority as TaskPriority} className="h-4 w-4" />
@@ -97,9 +101,9 @@ export default function TaskCard({
 					</div>
 				) : null}
 
-				<div className="flex gap-1 mt-2">
+				<div className="flex gap-1 mt-2 flex-wrap">
 					{selectedTags?.map((tag) => (
-						<TagBadge tag={tag} />
+						<TagBadge key={tag.id} tag={tag} />
 					))}
 				</div>
 			</div>

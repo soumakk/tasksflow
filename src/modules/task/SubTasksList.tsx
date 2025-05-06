@@ -4,7 +4,7 @@ import { ITask } from '@/types/tasks'
 import dayjs from 'dayjs'
 import { Circle, CircleCheck, PlusIcon, Trash2 } from 'lucide-react'
 import TextField from '../fields/TextField'
-import CircularProgress from '@/components/widgets/CircularProgress'
+import SubTaskProgress from './SubTaskProgress'
 
 export default function SubTasksList({ task }: { task: ITask }) {
 	async function updateCell(id: string, key: string, value: any) {
@@ -34,10 +34,6 @@ export default function SubTasksList({ task }: { task: ITask }) {
 		await updateCell(taskId, 'sub_tasks', temp)
 	}
 
-	const totalCount = task?.sub_tasks?.length ?? 0
-	const completedCount = task.sub_tasks?.filter((st) => st.completed)?.length ?? 0
-	const progress = (completedCount * 100) / totalCount
-
 	return (
 		<div className="py-5">
 			<div className="flex items-center justify-between py-2 border-b border-border">
@@ -45,9 +41,7 @@ export default function SubTasksList({ task }: { task: ITask }) {
 					Sub Tasks
 				</label>
 
-				{totalCount > 0 ? (
-					<CircularProgress progress={progress} size={20} strokeWidth={3} />
-				) : null}
+				<SubTaskProgress subTasks={task.sub_tasks} />
 			</div>
 
 			<ul>

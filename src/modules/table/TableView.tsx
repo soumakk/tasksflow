@@ -1,32 +1,16 @@
-import { Badge } from '@/components/ui/badge'
 import DataTable from '@/components/widgets/DataTable'
-import { priorityFilterAtom, searchQueryAtom, statusFilterAtom, tagsFilterAtom } from '@/lib/atoms'
-import { db } from '@/lib/db'
-import { ColumnDef } from '@tanstack/react-table'
-import dayjs from 'dayjs'
-import { useAtomValue } from 'jotai'
-import {
-	ALargeSmall,
-	Calendar1,
-	Disc,
-	Flag,
-	Hourglass,
-	Tag,
-	Tags,
-	Trash2,
-	Type,
-} from 'lucide-react'
-import { useMemo, useState } from 'react'
-import { formatDate } from '../../lib/utils'
-import { IStatus, ITag, ITask, TaskPriority } from '../../types/tasks'
-import DateField from '../fields/DateField'
-import PriorityField from '../fields/PriorityField'
-import StatusField from '../fields/StatusField'
-import TextField from '../fields/TextField'
 import PriorityFlag from '@/components/widgets/Flag'
-import { PriorityOptions } from '@/lib/data'
 import StatusBadge from '@/components/widgets/StatusBadge'
 import TagBadge from '@/components/widgets/TagBadge'
+import { PriorityOptions } from '@/lib/data'
+import { db } from '@/lib/db'
+import useFilteredTasks from '@/lib/hooks/useFilteredTasks'
+import { ColumnDef } from '@tanstack/react-table'
+import { Calendar1, Disc, Flag, Hourglass, Tag, Trash2, Type } from 'lucide-react'
+import { useState } from 'react'
+import { formatDate } from '../../lib/utils'
+import { IStatus, ITag, ITask, TaskPriority } from '../../types/tasks'
+import SubTaskProgress from '../task/SubTaskProgress'
 
 export default function TableView({
 	statusList,
@@ -39,16 +23,8 @@ export default function TableView({
 	tagsList: ITag[]
 	onViewTask: (taskId: string) => void
 }) {
-	const searchQuery = useAtomValue(searchQueryAtom)
-	const statusFilter = useAtomValue(statusFilterAtom)
-	const tagsFilter = useAtomValue(tagsFilterAtom)
-	const priorityFilter = useAtomValue(priorityFilterAtom)
+	const filteredTasks = useFilteredTasks({ tasks: tasksList })
 	const [editingCell, setEditingCell] = useState(null)
-
-	async function updateCell(id: string, key: string, value: string) {
-		const task = tasksList.find((t) => t.id === id)
-		await db.tasks.update(id, { ...task, [key]: value, updated_at: dayjs().toISOString() })
-	}
 
 	async function deleteRow(id: string) {
 		await db.tasks.delete(id)
@@ -84,10 +60,11 @@ export default function TableView({
 			cell: ({ getValue, row, column }) => {
 				const isEditing = editingCell?.row === row?.id && editingCell?.col === column?.id
 				const value = getValue() as string
-
 				return (
-					<div className="h-full w-full px-3 flex items-center cursor-pointer">
+					<div className="h-full w-full px-3 flex items-center cursor-pointer gap-3">
 						<p className="whitespace-nowrap">{value}</p>
+
+						<SubTaskProgress subTasks={row.original.sub_tasks} size={16} stroke={2} />
 					</div>
 				)
 			},
@@ -132,6 +109,24 @@ export default function TableView({
 			},
 		},
 		{
+			accessorKey: 'due_date',
+			header: () => (
+				<p className="flex gap-2 items-center whitespace-nowrap">
+					<Calendar1 className="h-4 w-4" />
+					<span>Due Date</span>
+				</p>
+			),
+			cell: ({ getValue, row, column }) => {
+				const date = getValue() as string
+
+				return (
+					<button className="h-full w-full px-3 flex items-center cursor-pointer data-[state=open]:outline-2 outline-primary">
+						{date ? <p className="whitespace-nowrap">{formatDate(date)}</p> : null}
+					</button>
+				)
+			},
+		},
+		{
 			accessorKey: 'tag_ids',
 			header: () => (
 				<p className="flex gap-2 items-center">
@@ -157,24 +152,7 @@ export default function TableView({
 				) : null
 			},
 		},
-		{
-			accessorKey: 'due_date',
-			header: () => (
-				<p className="flex gap-2 items-center whitespace-nowrap">
-					<Calendar1 className="h-4 w-4" />
-					<span>Due Date</span>
-				</p>
-			),
-			cell: ({ getValue, row, column }) => {
-				const date = getValue() as string
 
-				return (
-					<button className="h-full w-full px-3 flex items-center cursor-pointer data-[state=open]:outline-2 outline-primary">
-						{date ? <p className="whitespace-nowrap">{formatDate(date)}</p> : null}
-					</button>
-				)
-			},
-		},
 		{
 			accessorKey: 'updated_at',
 			header: () => (
@@ -199,30 +177,6 @@ export default function TableView({
 			},
 		},
 	]
-
-	const filteredTasks = useMemo(() => {
-		let temp = tasksList?.slice()
-
-		if (searchQuery) {
-			temp = temp?.filter((task) =>
-				task.title?.toLowerCase()?.includes(searchQuery?.trim()?.toLowerCase())
-			)
-		}
-
-		if (statusFilter?.length) {
-			temp = temp?.filter((task) => statusFilter?.includes(task?.status_id))
-		}
-
-		if (priorityFilter?.length) {
-			temp = temp?.filter((task) => priorityFilter?.includes(task?.priority))
-		}
-
-		if (tagsFilter?.length) {
-			temp = temp?.filter((task) => tagsFilter?.find((tag) => task.tag_ids?.includes(tag)))
-		}
-
-		return temp
-	}, [searchQuery, tasksList, statusFilter, priorityFilter, tagsFilter])
 
 	return (
 		<DataTable

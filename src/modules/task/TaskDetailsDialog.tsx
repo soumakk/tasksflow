@@ -30,13 +30,13 @@ export default function TaskDetailsDialog({
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
 			<DialogContent className="overflow-hidden max-w-3xl sm:rounded-3xl p-6">
-				<button></button>
+				<button className="absolute"></button>
 
 				<div className="grid grid-cols-1 sm:grid-cols-5 gap-8">
 					<div className="col-span-3">
 						<div className="mb-3">
 							<TextField
-								className="text-xl font-medium w-full focus:outline-2 outline-primary p-2 "
+								className="text-xl font-medium w-full focus:outline-2 outline-primary p-2 rounded-sm"
 								placeholder="Untitled"
 								defaultValue={task.title}
 								onSave={(value) => {

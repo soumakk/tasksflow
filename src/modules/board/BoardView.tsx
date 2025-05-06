@@ -173,12 +173,8 @@ export default function BoardView({
 		})
 	}, [handleDrop])
 
-	if (!tasksList || !statusList) {
-		return null
-	}
-
 	return (
-		<div className="flex gap-3 border-t border-border py-3">
+		<div className="flex gap-3 border-t border-border py-2">
 			{Object.entries(columnData)?.map(([statusId, taskIds]) => {
 				const status = statusList.find((st) => st.id === statusId)
 				return (

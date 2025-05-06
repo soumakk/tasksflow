@@ -1,4 +1,3 @@
-import { Badge } from '@/components/ui/badge'
 import {
 	Command,
 	CommandEmpty,
@@ -13,6 +12,7 @@ import { db } from '@/lib/db'
 import { generateId } from '@/lib/utils'
 import { ITag } from '@/types/tasks'
 import dayjs from 'dayjs'
+import { Tag } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import CreateNewItem from './CreateNewItem'
 
@@ -85,11 +85,14 @@ export default function TagsField({
 	return (
 		<Popover modal={true} open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<button className="w-full flex flex-wrap bg-muted rounded-sm border border-border items-center gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
+				<button className="w-full min-h-8 flex flex-wrap bg-muted rounded-sm border border-border items-center gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
 					{selectedTagIds?.length ? (
 						selectedTags?.map((tag) => <TagBadge tag={tag} />)
 					) : (
-						<p className="text-sm text-muted-foreground">Select tags</p>
+						<>
+							<Tag className="h-4 w-4 text-muted-foreground ml-1" />
+							<p className="text-xs text-muted-foreground ">Select tags</p>
+						</>
 					)}
 				</button>
 			</PopoverTrigger>

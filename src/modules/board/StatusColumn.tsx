@@ -5,6 +5,7 @@ import { dropTargetForElements } from '@atlaskit/pragmatic-drag-and-drop/element
 import { useEffect, useRef, useState } from 'react'
 import invariant from 'tiny-invariant'
 import TaskCard from './TaskCard'
+import useFilteredTasks from '@/lib/hooks/useFilteredTasks'
 
 export default function StatusColumn({
 	status,
@@ -17,6 +18,7 @@ export default function StatusColumn({
 }) {
 	const colRef = useRef(null)
 	const [isDraggedOver, setIsDraggedOver] = useState(false)
+	const filteredTasks = useFilteredTasks({ tasks })
 
 	useEffect(() => {
 		const colEl = colRef.current
@@ -33,10 +35,14 @@ export default function StatusColumn({
 		})
 	}, [status.id])
 
+	if (!filteredTasks?.length) {
+		return null
+	}
+
 	return (
 		<div
 			ref={colRef}
-			className={cn(' p-2 w-60 rounded-lg ', {
+			className={cn('max-w-64 min-w-64 p-2 rounded-lg ', {
 				'ring-2 ring-primary': isDraggedOver,
 			})}
 		>
@@ -44,7 +50,7 @@ export default function StatusColumn({
 				<StatusBadge status={status} />
 			</div>
 
-			{tasks?.map((task) => (
+			{filteredTasks?.map((task) => (
 				<TaskCard task={task} key={task.id} onViewTask={onViewTask} />
 			))}
 		</div>

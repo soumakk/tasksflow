@@ -1,28 +1,29 @@
+import { Input } from '@/components/ui/input'
+import { DatePicker } from '@/components/widgets/DatePicker'
 import { MultiDropdown } from '@/components/widgets/MultiDropdown'
 import {
+	dueDateFilterAtom,
 	priorityFilterAtom,
 	searchQueryAtom,
-	selectedRowsAtom,
 	statusFilterAtom,
 	tagsFilterAtom,
 } from '@/lib/atoms'
 import { PriorityOptions } from '@/lib/data'
-import { db } from '@/lib/db'
-import { useLiveQuery } from 'dexie-react-hooks'
-import { useAtom, useSetAtom } from 'jotai'
-import { CircleCheck, Flag } from 'lucide-react'
+import { useStatus, useTags } from '@/lib/hooks/dexie'
+import { useAtom } from 'jotai'
+import { Disc, Flag, Search, Tag } from 'lucide-react'
 
 export default function TasksFilters() {
-	// const setTasks = useSetAtom(tasksAtom)
-	const statusList = useLiveQuery(() => db.status.toArray())
+	const { statusList, isStatusLoading } = useStatus()
+	const { tagsList, isTagsLoading } = useTags()
 
 	const [searchQuery, setSearchQuery] = useAtom(searchQueryAtom)
 	const [statusFilter, setStatusFilter] = useAtom(statusFilterAtom)
 	const [tagsFilter, setTagsFilter] = useAtom(tagsFilterAtom)
 	const [priorityFilter, setPriorityFilter] = useAtom(priorityFilterAtom)
-	const [selectedRows, setSelectedRows] = useAtom(selectedRowsAtom)
+	const [dueDateFilter, setDueDateFilter] = useAtom(dueDateFilterAtom)
 
-	if (!statusList) {
+	if (isStatusLoading || isTagsLoading) {
 		return null
 	}
 
@@ -31,38 +32,26 @@ export default function TasksFilters() {
 		value: status.id,
 	}))
 
-	// const tagsOptions = tagsList?.map((tag) => ({
-	// 	label: tag.name,
-	// 	value: tag.id,
-	// }))
-
-	// function deleteRows() {
-	// 	setTasks((tasks) => tasks?.filter((task) => !Object.keys(selectedRows)?.includes(task.id)))
-	// 	setSelectedRows({})
-	// }
-
-	// if (!isEmpty(selectedRows)) {
-	// 	return (
-	// 		<Button size="sm" variant="outline" onClick={deleteRows}>
-	// 			Delete {Object.keys(selectedRows).length} row(s)
-	// 		</Button>
-	// 	)
-	// }
+	const tagsOptions = tagsList?.map((tag) => ({
+		label: tag.name,
+		value: tag.id,
+	}))
 
 	return (
 		<div className="flex border-t border-border">
-			<div className="flex items-center gap-3 py-1">
-				{/* <Input
+			<div className="flex items-center gap-3 py-2">
+				<Input
 					placeholder="Search tasks"
 					className="h-8"
 					value={searchQuery}
 					onChange={(e) => setSearchQuery(e.target.value)}
-				/> */}
+					startIcon={<Search className="h-4 w-4 text-muted-foreground" />}
+				/>
 
 				<MultiDropdown
 					trigger={
 						<>
-							<CircleCheck className="h-4 w-4" />
+							<Disc className="h-4 w-4 text-muted-foreground" />
 							<span>Status</span>
 						</>
 					}
@@ -72,10 +61,10 @@ export default function TasksFilters() {
 					onSelect={(selected) => setStatusFilter(selected)}
 				/>
 
-				{/* <MultiDropdown
+				<MultiDropdown
 					trigger={
 						<>
-							<Tag className="h-4 w-4" />
+							<Tag className="h-4 w-4 text-muted-foreground" />
 							<span>Tags</span>
 						</>
 					}
@@ -83,12 +72,12 @@ export default function TasksFilters() {
 					title="tags"
 					selected={tagsFilter}
 					onSelect={(selected) => setTagsFilter(selected)}
-				/> */}
+				/>
 
 				<MultiDropdown
 					trigger={
 						<>
-							<Flag className="h-4 w-4" />
+							<Flag className="h-4 w-4 text-muted-foreground" />
 							<span>Priority</span>
 						</>
 					}
@@ -96,7 +85,10 @@ export default function TasksFilters() {
 					title="priority"
 					selected={priorityFilter}
 					onSelect={(selected) => setPriorityFilter(selected)}
+					hideSearch
 				/>
+
+				<DatePicker id="date" value={dueDateFilter} onChange={setDueDateFilter} />
 			</div>
 		</div>
 	)

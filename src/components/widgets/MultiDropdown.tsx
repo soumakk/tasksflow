@@ -1,5 +1,3 @@
-'use client'
-
 import * as React from 'react'
 
 import { Badge } from '@/components/ui/badge'
@@ -15,6 +13,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover'
 import { ISelectOption } from '@/components/widgets/Select'
 import { cn } from '@/lib/utils'
+import { Trash2 } from 'lucide-react'
 
 export function MultiDropdown(props: {
 	id?: string
@@ -23,9 +22,15 @@ export function MultiDropdown(props: {
 	options: ISelectOption[]
 	title: string
 	trigger?: React.ReactNode
+	hideSearch?: boolean
 }) {
-	const { id, options, title, selected, trigger, onSelect } = props
+	const { id, options, title, selected, trigger, onSelect, hideSearch } = props
 	const [open, setOpen] = React.useState(false)
+	const [search, setSearch] = React.useState('')
+
+	const filteredOptions = options?.filter((opt) =>
+		search ? opt.label?.toLowerCase().includes(search?.toLowerCase()) : true
+	)
 
 	return (
 		<Popover open={open} onOpenChange={setOpen}>
@@ -37,7 +42,7 @@ export function MultiDropdown(props: {
 					role="combobox"
 					aria-expanded={open}
 					className={cn(
-						'relative gap-1.5 font-normal rounded-full h-7 px-2.5 data-[state=open]:bg-muted',
+						'relative gap-1.5 font-normal rounded-full border border-border h-8 px-3 data-[state=open]:bg-muted',
 						{
 							'bg-primary/10': selected?.length,
 						}
@@ -51,12 +56,18 @@ export function MultiDropdown(props: {
 					) : null}
 				</Button>
 			</PopoverTrigger>
-			<PopoverContent className="w-[200px] p-0" align="start">
-				<Command>
-					<CommandInput placeholder={`Search ${title}`} />
+			<PopoverContent className="w-[200px]" align="start">
+				<Command shouldFilter={false}>
+					{!hideSearch && (
+						<CommandInput
+							value={search}
+							onValueChange={setSearch}
+							placeholder={`Search ${title}`}
+						/>
+					)}
 					<CommandEmpty>No {title} found.</CommandEmpty>
 					<CommandGroup>
-						{options.map((opt) => (
+						{filteredOptions.map((opt) => (
 							<CommandItem
 								key={opt.value}
 								value={opt.value}
@@ -69,7 +80,7 @@ export function MultiDropdown(props: {
 									}
 									onSelect(Array.from(temp))
 								}}
-								className="text-xs"
+								className="text-xs p-2"
 							>
 								<Checkbox
 									checked={selected?.includes(opt.value)}
@@ -80,6 +91,19 @@ export function MultiDropdown(props: {
 						))}
 					</CommandGroup>
 				</Command>
+
+				{selected?.length ? (
+					<Button
+						variant="secondary"
+						size="sm"
+						className="w-full "
+						onClick={() => {
+							onSelect([])
+						}}
+					>
+						Clear
+					</Button>
+				) : null}
 			</PopoverContent>
 		</Popover>
 	)
