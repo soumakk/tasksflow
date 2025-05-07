@@ -18,7 +18,7 @@ export default function StatusColumn({
 }) {
 	const colRef = useRef(null)
 	const [isDraggedOver, setIsDraggedOver] = useState(false)
-	const filteredTasks = useFilteredTasks({ tasks })
+	const filteredTasks = useFilteredTasks({ tasks, skipSort: true })
 
 	useEffect(() => {
 		const colEl = colRef.current

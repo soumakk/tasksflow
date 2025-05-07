@@ -66,7 +66,7 @@ export function MultiDropdown(props: {
 						/>
 					)}
 					<CommandEmpty>No {title} found.</CommandEmpty>
-					<CommandGroup>
+					<CommandGroup className="max-h-[200px] overflow-auto">
 						{filteredOptions.map((opt) => (
 							<CommandItem
 								key={opt.value}

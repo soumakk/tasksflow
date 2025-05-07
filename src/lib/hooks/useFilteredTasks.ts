@@ -17,7 +17,13 @@ export enum SortBy {
 	DateDesc = 'last-updated-desc',
 }
 
-export default function useFilteredTasks({ tasks }: { tasks: ITask[] }) {
+export default function useFilteredTasks({
+	tasks,
+	skipSort,
+}: {
+	tasks: ITask[]
+	skipSort?: boolean
+}) {
 	const searchQuery = useAtomValue(searchQueryAtom)
 	const statusFilter = useAtomValue(statusFilterAtom)
 	const tagsFilter = useAtomValue(tagsFilterAtom)
@@ -50,28 +56,32 @@ export default function useFilteredTasks({ tasks }: { tasks: ITask[] }) {
 			temp = temp?.filter((task) => tagsFilter?.find((tag) => task.tag_ids?.includes(tag)))
 		}
 
-		if (sortFilter) {
-			switch (sortFilter) {
-				case SortBy.TitleAsc:
-					temp = temp?.sort((a, b) => (a.title > b.title ? 1 : -1))
-					break
-
-				case SortBy.TitleDesc:
-					temp = temp?.sort((a, b) => (a.title < b.title ? 1 : -1))
-					break
-
-				case SortBy.DateAsc:
-					temp = temp?.sort((a, b) => (a.updated_at > b.updated_at ? 1 : -1))
-					break
-
-				case SortBy.DateDesc:
-					temp = temp?.sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1))
-					break
-			}
+		if (!skipSort) {
+			temp = temp?.sort((a, b) => (a.created_at < b.created_at ? 1 : -1))
 		}
 
+		// if (!skipSort && sortFilter) {
+		// 	switch (sortFilter) {
+		// 		case SortBy.TitleAsc:
+		// 			temp = temp?.sort((a, b) => (a.title > b.title ? 1 : -1))
+		// 			break
+
+		// 		case SortBy.TitleDesc:
+		// 			temp = temp?.sort((a, b) => (a.title < b.title ? 1 : -1))
+		// 			break
+
+		// 		case SortBy.DateAsc:
+		// 			temp = temp?.sort((a, b) => (a.updated_at > b.updated_at ? 1 : -1))
+		// 			break
+
+		// 		case SortBy.DateDesc:
+		// 			temp = temp?.sort((a, b) => (a.updated_at < b.updated_at ? 1 : -1))
+		// 			break
+		// 	}
+		// }
+
 		return temp
-	}, [searchQuery, tasks, statusFilter, priorityFilter, tagsFilter, dueDateFilter, sortFilter])
+	}, [searchQuery, tasks, statusFilter, priorityFilter, tagsFilter, dueDateFilter, skipSort])
 
 	return filteredTasks
 }

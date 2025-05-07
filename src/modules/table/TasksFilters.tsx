@@ -38,8 +38,8 @@ export default function TasksFilters() {
 	}))
 
 	return (
-		<div className="flex border-t border-border">
-			<div className="flex items-center gap-3 py-2">
+		<div className="flex ">
+			<div className="flex items-center gap-3 py-1">
 				<Input
 					placeholder="Search tasks"
 					className="h-8"

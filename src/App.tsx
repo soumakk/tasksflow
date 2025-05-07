@@ -69,7 +69,7 @@ function App() {
 
 				<Tabs value={currentTab} onValueChange={setCurrentTab}>
 					<div className="py-1 flex items-center justify-between px-2">
-						<TabsList>
+						{/* <TabsList>
 							<TabsTrigger value="table">
 								<Table className="h-4 w-4 mr-1" />
 								<span>Table</span>
@@ -78,12 +78,13 @@ function App() {
 								<Columns3 className="h-4 w-4 mr-1" />
 								<span>Board</span>
 							</TabsTrigger>
-						</TabsList>
+						</TabsList> */}
 
+						<TasksFilters />
 						<div className="flex items-center gap-2">
-							<SortFilter />
+							{/* {currentTab === 'table' ? <SortFilter /> : null} */}
 
-							<button
+							{/* <button
 								onClick={() => setIsFiltersOpen((o) => !o)}
 								className={cn(
 									'h-8 px-3 rounded-full text-xs font-medium gap-1 border border-border text-muted-foreground flex items-center justify-center hover:bg-muted hover:text-primary',
@@ -92,7 +93,7 @@ function App() {
 							>
 								<ListFilter className="h-4 w-4" />
 								<span>Filters</span>
-							</button>
+							</button> */}
 
 							<Button
 								size="sm"
@@ -105,7 +106,7 @@ function App() {
 						</div>
 					</div>
 
-					{isFiltersOpen && <TasksFilters />}
+					{/* {isFiltersOpen && <TasksFilters />} */}
 
 					{isContentLoading ? (
 						<div className="grid place-content-center py-32">
