@@ -42,7 +42,7 @@ export default function StatusColumn({
 	return (
 		<div
 			ref={colRef}
-			className={cn('max-w-64 min-w-64 p-2 rounded-lg ', {
+			className={cn('max-w-64 min-w-64 p-2 rounded-lg h-full flex flex-col overflow-hidden', {
 				'ring-2 ring-primary': isDraggedOver,
 			})}
 		>
@@ -50,9 +50,11 @@ export default function StatusColumn({
 				<StatusBadge status={status} />
 			</div>
 
-			{filteredTasks?.map((task) => (
-				<TaskCard task={task} key={task.id} onViewTask={onViewTask} />
-			))}
+			<div className="overflow-y-auto flex-1">
+				{filteredTasks?.map((task) => (
+					<TaskCard task={task} key={task.id} onViewTask={onViewTask} />
+				))}
+			</div>
 		</div>
 	)
 }

@@ -61,15 +61,19 @@ function App() {
 
 	return (
 		<>
-			<div className="relative h-full max-w-5xl mx-auto">
+			<div className="relative h-full max-w-5xl mx-auto flex flex-col overflow-hidden">
 				<div className="flex justify-between items-center px-4 py-4">
 					<Title />
 					<ThemeSwitch />
 				</div>
 
-				<Tabs value={currentTab} onValueChange={setCurrentTab}>
+				<Tabs
+					value={currentTab}
+					onValueChange={setCurrentTab}
+					className="flex-1 flex flex-col overflow-hidden"
+				>
 					<div className="py-1 flex items-center justify-between px-2">
-						{/* <TabsList>
+						<TabsList>
 							<TabsTrigger value="table">
 								<Table className="h-4 w-4 mr-1" />
 								<span>Table</span>
@@ -78,13 +82,12 @@ function App() {
 								<Columns3 className="h-4 w-4 mr-1" />
 								<span>Board</span>
 							</TabsTrigger>
-						</TabsList> */}
+						</TabsList>
 
-						<TasksFilters />
 						<div className="flex items-center gap-2">
 							{/* {currentTab === 'table' ? <SortFilter /> : null} */}
 
-							{/* <button
+							<button
 								onClick={() => setIsFiltersOpen((o) => !o)}
 								className={cn(
 									'h-8 px-3 rounded-full text-xs font-medium gap-1 border border-border text-muted-foreground flex items-center justify-center hover:bg-muted hover:text-primary',
@@ -93,7 +96,7 @@ function App() {
 							>
 								<ListFilter className="h-4 w-4" />
 								<span>Filters</span>
-							</button> */}
+							</button>
 
 							<Button
 								size="sm"
@@ -106,7 +109,7 @@ function App() {
 						</div>
 					</div>
 
-					{/* {isFiltersOpen && <TasksFilters />} */}
+					{isFiltersOpen && <TasksFilters />}
 
 					{isContentLoading ? (
 						<div className="grid place-content-center py-32">
@@ -114,7 +117,7 @@ function App() {
 						</div>
 					) : (
 						<>
-							<TabsContent value="table" className="m-0">
+							<TabsContent value="table" className="m-0 flex-1 overflow-auto">
 								<TableView
 									tagsList={tagsList}
 									statusList={statusList}
@@ -122,7 +125,10 @@ function App() {
 									onViewTask={(taskId) => setSelectedTaskId(taskId)}
 								/>
 							</TabsContent>
-							<TabsContent value="board" className="m-0">
+							<TabsContent
+								value="board"
+								className="m-0 flex-1 overflow-x-auto overflow-y-hidden"
+							>
 								<BoardView
 									tagsList={tagsList}
 									statusList={statusList}

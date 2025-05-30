@@ -52,7 +52,7 @@ export default function DataTable({ data, columns, onRowClick, isLoading }: Data
 	})
 
 	return (
-		<div className="w-full overflow-auto flex-1">
+		<div className="w-full h-full overflow-auto flex-1">
 			<Table
 				className=""
 				{...{

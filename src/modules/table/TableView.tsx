@@ -11,6 +11,10 @@ import { useState } from 'react'
 import { formatDate } from '../../lib/utils'
 import { IStatus, ITag, ITask, TaskPriority } from '../../types/tasks'
 import SubTaskProgress from '../task/SubTaskProgress'
+import StatusEditField from './fields/StatusEditField'
+import PriorityEditField from './fields/PriorityEditField'
+import dayjs from 'dayjs'
+import TagEditField from './fields/TagEditField'
 
 export default function TableView({
 	statusList,
@@ -28,6 +32,11 @@ export default function TableView({
 
 	async function deleteRow(id: string) {
 		await db.tasks.delete(id)
+	}
+
+	async function updateCell(id: string, key: string, value: any) {
+		const task = tasksList.find((t) => t.id === id)
+		await db.tasks.update(id, { ...task, [key]: value, updated_at: dayjs().toISOString() })
 	}
 
 	const columns: ColumnDef<ITask>[] = [
@@ -80,34 +89,73 @@ export default function TableView({
 			),
 			cell: ({ getValue, row, column }) => {
 				const priority = getValue() as TaskPriority
-				const selectedLabel = PriorityOptions?.find((opt) => opt.value === priority)?.label
-
-				if (!priority) {
-					return null
-				}
 				return (
-					<button className="w-full h-full flex items-center gap-2 px-3 cursor-pointer data-[state=open]:outline-2 outline-primary">
-						<PriorityFlag priority={priority} />
-						<span>{selectedLabel}</span>
-					</button>
+					<PriorityEditField
+						onSave={(value) => {
+							updateCell(row?.id, column?.id, value)
+							setEditingCell(null)
+						}}
+						initialValue={priority}
+					/>
 				)
 			},
 		},
 		{
 			accessorKey: 'status_id',
-			header: () => (
-				<p className="flex gap-2 items-center">
-					<Disc className="h-4 w-4" />
-					<span>Status</span>
-				</p>
-			),
+			header: 'Status',
 			cell: ({ getValue, row, column }) => {
 				const statusId = getValue() as string
-				const statusInfo = statusList?.find((opt) => opt.id === statusId)
-
-				return <StatusBadge status={statusInfo} />
+				return (
+					<StatusEditField
+						onSave={(value) => {
+							updateCell(row?.id, column?.id, value)
+							setEditingCell(null)
+						}}
+						initialValue={statusId}
+						statusList={statusList}
+					/>
+				)
 			},
 		},
+
+		// {
+		// 	accessorKey: 'priority',
+		// 	header: () => (
+		// 		<p className="flex gap-2 items-center">
+		// 			<Flag className="h-4 w-4" />
+		// 			<span>Priority</span>
+		// 		</p>
+		// 	),
+		// 	cell: ({ getValue, row, column }) => {
+		// 		const priority = getValue() as TaskPriority
+		// 		const selectedLabel = PriorityOptions?.find((opt) => opt.value === priority)?.label
+
+		// 		if (!priority) {
+		// 			return null
+		// 		}
+		// 		return (
+		// 			<button className="w-full h-full flex items-center gap-2 px-3 cursor-pointer data-[state=open]:outline-2 outline-primary">
+		// 				<PriorityFlag priority={priority} />
+		// 				<span>{selectedLabel}</span>
+		// 			</button>
+		// 		)
+		// 	},
+		// },
+		// {
+		// 	accessorKey: 'status_id',
+		// 	header: () => (
+		// 		<p className="flex gap-2 items-center">
+		// 			<Disc className="h-4 w-4" />
+		// 			<span>Status</span>
+		// 		</p>
+		// 	),
+		// 	cell: ({ getValue, row, column }) => {
+		// 		const statusId = getValue() as string
+		// 		const statusInfo = statusList?.find((opt) => opt.id === statusId)
+
+		// 		return <StatusBadge status={statusInfo} />
+		// 	},
+		// },
 		{
 			accessorKey: 'due_date',
 			header: () => (
@@ -136,21 +184,34 @@ export default function TableView({
 			),
 			cell: ({ getValue, row, column }) => {
 				const tagIds = getValue() as string[]
-				if (!tagIds?.length) return null
-				const tags = tagsList?.filter((opt) => tagIds?.includes(opt.id))
-				return tags ? (
-					<div
-						className="h-full w-full px-3 flex items-center"
-						onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
-					>
-						<div className="flex gap-1">
-							{tags?.slice(0, 3)?.map((tag) => (
-								<TagBadge tag={tag} />
-							))}
-						</div>
-					</div>
-				) : null
+				return (
+					<TagEditField
+						onSave={(value) => {
+							updateCell(row?.id, column?.id, value)
+							setEditingCell(null)
+						}}
+						initialValue={tagIds}
+						tagsList={tagsList}
+					/>
+				)
 			},
+			// cell: ({ getValue, row, column }) => {
+			// 	const tagIds = getValue() as string[]
+			// 	if (!tagIds?.length) return null
+			// 	const tags = tagsList?.filter((opt) => tagIds?.includes(opt.id))
+			// 	return tags ? (
+			// 		<div
+			// 			className="h-full w-full px-3 flex items-center"
+			// 			onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
+			// 		>
+			// 			<div className="flex gap-1">
+			// 				{tags?.slice(0, 3)?.map((tag) => (
+			// 					<TagBadge tag={tag} />
+			// 				))}
+			// 			</div>
+			// 		</div>
+			// 	) : null
+			// },
 		},
 
 		{
