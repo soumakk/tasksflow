@@ -16,6 +16,8 @@ import ThemeSwitch from './modules/ThemeSwitch'
 import Title from './modules/Title'
 import { ITask, TaskPriority } from './types/tasks'
 import SortFilter from './modules/table/SortFilter'
+import Dashboard from './modules/dashboard/Dashboard'
+import { SidebarTrigger } from './components/ui/sidebar'
 
 function App() {
 	const [isFiltersOpen, setIsFiltersOpen] = useAtom(isFiltersOpenAtom)
@@ -60,9 +62,10 @@ function App() {
 	const isContentLoading = isTasksLoading || isTagsLoading || isStatusLoading
 
 	return (
-		<>
-			<div className="relative h-full max-w-5xl mx-auto flex flex-col overflow-hidden">
+		<Dashboard>
+			<div className="relative h-full flex flex-col overflow-hidden">
 				<div className="flex justify-between items-center px-4 py-4">
+					<SidebarTrigger />
 					<Title />
 					<ThemeSwitch />
 				</div>
@@ -148,7 +151,7 @@ function App() {
 					task={tasksList?.find((task) => task.id === selectedTaskId)}
 				/>
 			) : null}
-		</>
+		</Dashboard>
 	)
 }
 
