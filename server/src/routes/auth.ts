@@ -1,11 +1,11 @@
 // src/routes/auth.routes.ts
-import prisma from '@/lib/prisma'
+import { TokenEncryption } from '@/lib/encrypt'
 import { authMiddleware } from '@/middleware/auth.middleware'
 import { validate } from '@/middleware/zod.middleware'
 import { AuthVariables, loginSchema, signupSchema } from '@/schemas/auth'
 import { AuthService } from '@/service/auth.service'
-import * as jwt from 'jsonwebtoken'
 import { Hono } from 'hono'
+import { deleteCookie, setCookie } from 'hono/cookie'
 import { HTTPException } from 'hono/http-exception'
 
 const auth = new Hono<{ Variables: AuthVariables }>()
@@ -17,11 +17,23 @@ auth.post('/signup', validate(signupSchema), async (c) => {
 		const userData = c.req.valid('json')
 		const result = await authService.signup(userData)
 
+		const encryptedToken = TokenEncryption.encrypt(result.token)
+
+		setCookie(c, 'auth_token', encryptedToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'None',
+			maxAge: 24 * 60 * 60,
+			path: '/',
+		})
+
 		return c.json(
 			{
 				success: true,
 				message: 'User registered successfully',
-				data: result,
+				data: {
+					user: result.user,
+				},
 			},
 			201
 		)
@@ -38,10 +50,22 @@ auth.post('/login', validate(loginSchema), async (c) => {
 		const credentials = c.req.valid('json')
 		const result = await authService.login(credentials)
 
+		const encryptedToken = TokenEncryption.encrypt(result.token)
+
+		setCookie(c, 'auth_token', encryptedToken, {
+			httpOnly: true,
+			secure: true,
+			sameSite: 'None', // Required for cross-origin requests
+			maxAge: 24 * 60 * 60, // 24 hours
+			path: '/',
+		})
+
 		return c.json({
 			success: true,
 			message: 'Login successful',
-			data: result,
+			data: {
+				user: result.user,
+			},
 		})
 	} catch (error) {
 		throw new HTTPException(401, {
@@ -56,18 +80,19 @@ auth.post('/logout', authMiddleware, async (c) => {
 		const token = c.get('token')
 		const result = await authService.logout(token)
 
+		deleteCookie(c, 'auth_token', {
+			path: '/',
+			sameSite: 'None',
+		})
+
 		return c.json({
 			success: true,
 			message: result.message,
 		})
 	} catch (error) {
-		return c.json(
-			{
-				success: false,
-				error: 'Logout failed',
-			},
-			500
-		)
+		throw new HTTPException(500, {
+			message: error instanceof Error ? error.message : 'Logout failed',
+		})
 	}
 })
 
@@ -84,46 +109,6 @@ auth.get('/me', authMiddleware, async (c) => {
 			},
 		},
 	})
-})
-
-// Refresh Token Route
-auth.post('/refresh', authMiddleware, async (c) => {
-	try {
-		const user = c.get('user')
-		const oldToken = c.get('token')
-
-		// Generate new token
-		const newToken = jwt.sign(
-			{ userId: user.id, email: user.email },
-			process.env.JWT_SECRET || 'your-secret-key',
-			{ expiresIn: '24h' }
-		)
-
-		// Update token in database
-		const expiresAt = new Date()
-		expiresAt.setHours(expiresAt.getHours() + 24)
-
-		await prisma.token.update({
-			where: { token: oldToken },
-			data: {
-				token: newToken,
-				expires_at: expiresAt,
-			},
-		})
-
-		return c.json({
-			success: true,
-			data: { token: newToken },
-		})
-	} catch (error) {
-		return c.json(
-			{
-				success: false,
-				error: 'Token refresh failed',
-			},
-			500
-		)
-	}
 })
 
 export default auth

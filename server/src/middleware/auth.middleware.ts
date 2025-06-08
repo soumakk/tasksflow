@@ -2,18 +2,20 @@
 import { createMiddleware } from 'hono/factory'
 import * as jwt from 'jsonwebtoken'
 import { AuthService } from '../service/auth.service'
+import { getCookie } from 'hono/cookie'
+import { TokenEncryption } from '@/lib/encrypt'
+import { HTTPException } from 'hono/http-exception'
 
 const JWT_SECRET = process.env.JWT_SECRET || 'your-secret-key'
 const authService = new AuthService()
 
 export const authMiddleware = createMiddleware(async (c, next) => {
-	const authHeader = c.req.header('Authorization')
-
-	if (!authHeader || !authHeader.startsWith('Bearer ')) {
-		return c.json({ error: 'Authorization token required' }, 401)
+	const encryptedToken = getCookie(c, 'auth_token')
+	if (!encryptedToken) {
+		return c.json({ error: 'No authentication token found' }, 401)
 	}
 
-	const token = authHeader.substring(7)
+	const token = TokenEncryption.decrypt(encryptedToken)
 
 	try {
 		// Verify JWT token
@@ -31,6 +33,6 @@ export const authMiddleware = createMiddleware(async (c, next) => {
 
 		await next()
 	} catch (error) {
-		return c.json({ error: 'Invalid or expired token' }, 401)
+		throw new HTTPException(401, { message: 'Invalid or expired token' })
 	}
 })
