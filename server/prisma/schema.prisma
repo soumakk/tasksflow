@@ -1,0 +1,83 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider  = "postgresql"
+  url       = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model Space {
+  id    Int     @id @default(autoincrement())
+  title String
+  icon  String?
+
+  statuses Status[]
+  tags     Tag[]
+  tasks    Task[]
+}
+
+model Task {
+  id          Int      @id @default(autoincrement())
+  title       String
+  description String?
+  priority    Priority
+  due_date    DateTime
+
+  status   Status @relation(fields: [statusId], references: [id])
+  statusId Int
+
+  tags Tag[] @relation("TaskTags")
+
+  space   Space @relation(fields: [spaceId], references: [id])
+  spaceId Int
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model SubTask {
+  id        Int     @id @default(autoincrement())
+  title     String
+  completed Boolean
+
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+}
+
+model Status {
+  id    Int    @id @default(autoincrement())
+  name  String
+  color String
+
+  space   Space @relation(fields: [spaceId], references: [id])
+  spaceId Int
+
+  tasks Task[]
+}
+
+model Tag {
+  id    Int    @id @default(autoincrement())
+  name  String
+  color String
+
+  space   Space @relation(fields: [spaceId], references: [id])
+  spaceId Int
+
+  tasks Task[] @relation("TaskTags")
+}
+
+enum Priority {
+  URGENT
+  HIGH
+  NORMAL
+  LOW
+}
