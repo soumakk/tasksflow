@@ -1,21 +1,19 @@
 FROM oven/bun:latest
 
-ARG DATABASE_URL
-ARG DIRECT_URL
+# Install OpenSSL (required for Prisma)
+RUN apt-get update -y && apt-get install -y openssl
 
-ENV DATABASE_URL=${DATABASE_URL}
-ENV DIRECT_URL=${DIRECT_URL}
-
-WORKDIR /app  
+WORKDIR /app
 ENV PORT=5000
 
 COPY package.json bun.lock ./
 COPY src ./src
 COPY prisma ./prisma
 
-RUN bun install --frozen-lockfile 
-RUN bun run build 
+# Install dependencies and generate Prisma client
+RUN bun install --frozen-lockfile
+RUN bunx prisma generate
 
 EXPOSE $PORT
 
-CMD ["bun", "start"] 
+CMD ["bun", "start"]
