@@ -28,6 +28,10 @@ app.use(
 	})
 )
 
+app.get('/', (c) => {
+	return c.text('Welcome to tasksflow APIs')
+})
+
 app.use('*', async (c, next) => {
 	const start = Date.now()
 	await next()
