@@ -6,7 +6,6 @@ export default function Title() {
 
 	return (
 		<>
-			{/* <h1 className="font-semibold text-2xl">Tasks</h1> */}
 			<input
 				type="text"
 				defaultValue="Tasks"

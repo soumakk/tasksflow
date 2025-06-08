@@ -1,19 +1,15 @@
 import DataTable from '@/components/widgets/DataTable'
-import PriorityFlag from '@/components/widgets/Flag'
-import StatusBadge from '@/components/widgets/StatusBadge'
-import TagBadge from '@/components/widgets/TagBadge'
-import { PriorityOptions } from '@/lib/data'
 import { db } from '@/lib/db'
 import useFilteredTasks from '@/lib/hooks/useFilteredTasks'
 import { ColumnDef } from '@tanstack/react-table'
-import { Calendar1, Disc, Flag, Hourglass, Tag, Trash2, Type } from 'lucide-react'
+import dayjs from 'dayjs'
+import { Calendar1, Flag, Hourglass, Tag, Trash2, Type } from 'lucide-react'
 import { useState } from 'react'
 import { formatDate } from '../../lib/utils'
 import { IStatus, ITag, ITask, TaskPriority } from '../../types/tasks'
 import SubTaskProgress from '../task/SubTaskProgress'
-import StatusEditField from './fields/StatusEditField'
 import PriorityEditField from './fields/PriorityEditField'
-import dayjs from 'dayjs'
+import StatusEditField from './fields/StatusEditField'
 import TagEditField from './fields/TagEditField'
 
 export default function TableView({
@@ -74,6 +70,24 @@ export default function TableView({
 						<p className="whitespace-nowrap">{value}</p>
 
 						<SubTaskProgress subTasks={row.original.sub_tasks} size={16} stroke={2} />
+					</div>
+				)
+			},
+			size: 300,
+		},
+		{
+			accessorKey: 'description',
+			header: () => (
+				<p className="flex gap-2 items-center">
+					<Type className="h-4 w-4" />
+					<span>Description</span>
+				</p>
+			),
+			cell: ({ getValue }) => {
+				const value = getValue() as string
+				return (
+					<div className="h-full w-full px-3 flex items-center cursor-pointer gap-3">
+						<p className="whitespace-nowrap">{value}</p>
 					</div>
 				)
 			},

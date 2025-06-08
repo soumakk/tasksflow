@@ -1,7 +1,6 @@
 import { AppSidebar } from './Sidebar'
 
-import { Separator } from '@/components/ui/separator'
-import { SidebarInset, SidebarProvider, SidebarTrigger } from '@/components/ui/sidebar'
+import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar'
 import { ReactNode } from 'react'
 
 export default function Dashboard({ children }: { children: ReactNode }) {

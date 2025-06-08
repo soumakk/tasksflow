@@ -38,58 +38,56 @@ export default function TasksFilters() {
 	}))
 
 	return (
-		<div className="flex border-t border-border">
-			<div className="flex items-center gap-3 py-1">
-				<Input
-					placeholder="Search tasks"
-					className="h-8"
-					value={searchQuery}
-					onChange={(e) => setSearchQuery(e.target.value)}
-					startIcon={<Search className="h-4 w-4 text-muted-foreground" />}
-				/>
+		<div className="flex items-center gap-3 py-1">
+			<Input
+				placeholder="Search tasks"
+				className="h-8 rounded-full"
+				value={searchQuery}
+				onChange={(e) => setSearchQuery(e.target.value)}
+				startIcon={<Search className="h-4 w-4 text-muted-foreground" />}
+			/>
 
-				<MultiDropdown
-					trigger={
-						<>
-							<Disc className="h-4 w-4 text-muted-foreground" />
-							<span>Status</span>
-						</>
-					}
-					options={statusOptions}
-					title="status"
-					selected={statusFilter}
-					onSelect={(selected) => setStatusFilter(selected)}
-				/>
+			<MultiDropdown
+				trigger={
+					<>
+						<Disc className="h-4 w-4 text-muted-foreground" />
+						<span>Status</span>
+					</>
+				}
+				options={statusOptions}
+				title="status"
+				selected={statusFilter}
+				onSelect={(selected) => setStatusFilter(selected)}
+			/>
 
-				<MultiDropdown
-					trigger={
-						<>
-							<Tag className="h-4 w-4 text-muted-foreground" />
-							<span>Tags</span>
-						</>
-					}
-					options={tagsOptions}
-					title="tags"
-					selected={tagsFilter}
-					onSelect={(selected) => setTagsFilter(selected)}
-				/>
+			<MultiDropdown
+				trigger={
+					<>
+						<Tag className="h-4 w-4 text-muted-foreground" />
+						<span>Tags</span>
+					</>
+				}
+				options={tagsOptions}
+				title="tags"
+				selected={tagsFilter}
+				onSelect={(selected) => setTagsFilter(selected)}
+			/>
 
-				<MultiDropdown
-					trigger={
-						<>
-							<Flag className="h-4 w-4 text-muted-foreground" />
-							<span>Priority</span>
-						</>
-					}
-					options={PriorityOptions}
-					title="priority"
-					selected={priorityFilter}
-					onSelect={(selected) => setPriorityFilter(selected)}
-					hideSearch
-				/>
+			<MultiDropdown
+				trigger={
+					<>
+						<Flag className="h-4 w-4 text-muted-foreground" />
+						<span>Priority</span>
+					</>
+				}
+				options={PriorityOptions}
+				title="priority"
+				selected={priorityFilter}
+				onSelect={(selected) => setPriorityFilter(selected)}
+				hideSearch
+			/>
 
-				<DatePicker id="date" value={dueDateFilter} onChange={setDueDateFilter} />
-			</div>
+			<DatePicker id="date" value={dueDateFilter} onChange={setDueDateFilter} />
 		</div>
 	)
 }

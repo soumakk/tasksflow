@@ -1,26 +1,21 @@
 import { Button } from '@/components/ui/button'
 import { SidebarTrigger } from '@/components/ui/sidebar'
-import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs'
-import { boardColumnsAtom, currentTabAtom, isFiltersOpenAtom } from '@/lib/atoms'
+import { boardColumnsAtom, isFiltersOpenAtom } from '@/lib/atoms'
 import { db } from '@/lib/db'
 import { useStatus, useTags, useTasks } from '@/lib/hooks/dexie'
 import { cn, generateId } from '@/lib/utils'
-import BoardView from '@/modules/board/BoardView'
 import Dashboard from '@/modules/dashboard/Dashboard'
 import TableView from '@/modules/table/TableView'
 import TasksFilters from '@/modules/table/TasksFilters'
 import TaskDetailsDialog from '@/modules/task/TaskDetailsDialog'
-import ThemeSwitch from '@/modules/ThemeSwitch'
-import Title from '@/modules/Title'
 import { ITask, TaskPriority } from '@/types/tasks'
 import dayjs from 'dayjs'
 import { useAtom, useSetAtom } from 'jotai'
-import { Columns3, ListFilter, Loader, PlusIcon, Table } from 'lucide-react'
+import { ListFilter, Loader, PlusIcon } from 'lucide-react'
 import { useEffect, useState } from 'react'
 
 function Home() {
 	const [isFiltersOpen, setIsFiltersOpen] = useAtom(isFiltersOpenAtom)
-	const [currentTab, setCurrentTab] = useAtom(currentTabAtom)
 	const [selectedTaskId, setSelectedTaskId] = useState(null)
 
 	const { tasksList, isTasksLoading } = useTasks()
@@ -62,85 +57,56 @@ function Home() {
 
 	return (
 		<Dashboard>
-			<div className="relative h-full flex flex-col overflow-hidden">
+			<div className="relative">
 				<div className="flex justify-between items-center px-4 py-4">
-					<SidebarTrigger />
-					<Title />
-					<ThemeSwitch />
-				</div>
-
-				<Tabs
-					value={currentTab}
-					onValueChange={setCurrentTab}
-					className="flex-1 flex flex-col overflow-hidden"
-				>
-					<div className="py-1 flex items-center justify-between px-2">
-						<TabsList>
-							<TabsTrigger value="table">
-								<Table className="h-4 w-4 mr-1" />
-								<span>Table</span>
-							</TabsTrigger>
-							<TabsTrigger value="board">
-								<Columns3 className="h-4 w-4 mr-1" />
-								<span>Board</span>
-							</TabsTrigger>
-						</TabsList>
-
-						<div className="flex items-center gap-2">
-							{/* {currentTab === 'table' ? <SortFilter /> : null} */}
-
-							<button
-								onClick={() => setIsFiltersOpen((o) => !o)}
-								className={cn(
-									'h-8 px-3 rounded-full text-xs font-medium gap-1 border border-border text-muted-foreground flex items-center justify-center hover:bg-muted hover:text-primary',
-									{ 'text-primary': isFiltersOpen }
-								)}
-							>
-								<ListFilter className="h-4 w-4" />
-								<span>Filters</span>
-							</button>
-
-							<Button
-								size="sm"
-								className="rounded-full px-3 gap-1"
-								onClick={handleNewTask}
-							>
-								<PlusIcon className="h-3 w-3" />
-								<span>Add task</span>
-							</Button>
-						</div>
+					<div className="flex justify-start gap-3 items-center ">
+						<SidebarTrigger />
+						<h1 className="font-semibold text-xl">Tasks</h1>
 					</div>
 
-					{isFiltersOpen && <TasksFilters />}
+					<div className="flex items-center gap-2">
+						<button
+							onClick={() => setIsFiltersOpen((o) => !o)}
+							className={cn(
+								'h-8 px-3 rounded-full text-xs font-medium gap-1 border border-border text-muted-foreground flex items-center justify-center hover:bg-muted hover:text-primary',
+								{ 'text-primary': isFiltersOpen }
+							)}
+						>
+							<ListFilter className="h-4 w-4" />
+							<span>Filters</span>
+						</button>
+
+						<Button
+							size="sm"
+							className="rounded-full px-3 gap-1"
+							onClick={handleNewTask}
+						>
+							<PlusIcon className="h-3 w-3" />
+							<span>Add task</span>
+						</Button>
+					</div>
+				</div>
+
+				<div style={{ height: 'calc(100dvh - 64px)' }} className="overflow-hidden">
+					{isFiltersOpen && (
+						<div className="py-1 flex items-center justify-between px-3 border-t">
+							<TasksFilters />
+						</div>
+					)}
 
 					{isContentLoading ? (
 						<div className="grid place-content-center py-32">
 							<Loader className="animate-spin h-5 w-5 text-primary" />
 						</div>
 					) : (
-						<>
-							<TabsContent value="table" className="m-0 flex-1 overflow-auto">
-								<TableView
-									tagsList={tagsList}
-									statusList={statusList}
-									tasksList={tasksList}
-									onViewTask={(taskId) => setSelectedTaskId(taskId)}
-								/>
-							</TabsContent>
-							<TabsContent
-								value="board"
-								className="m-0 flex-1 overflow-x-auto overflow-y-hidden"
-							>
-								<BoardView
-									tagsList={tagsList}
-									statusList={statusList}
-									tasksList={tasksList}
-									onViewTask={(taskId) => setSelectedTaskId(taskId)}
-								/>
-							</TabsContent>
-						</>
+						<TableView
+							tagsList={tagsList}
+							statusList={statusList}
+							tasksList={tasksList}
+							onViewTask={(taskId) => setSelectedTaskId(taskId)}
+						/>
 					)}
-				</Tabs>
+				</div>
 			</div>
 
 			{selectedTaskId ? (
