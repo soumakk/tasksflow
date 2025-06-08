@@ -1,14 +1,13 @@
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import prisma from '../lib/prisma'
-import { zValidator } from '@hono/zod-validator'
-import { createTagSchema, updateTagSchema } from '../schemas/tag'
-import { formatZodError, validate } from '../lib/zod'
+import prisma from '@/lib/prisma'
+import { createTagSchema, updateTagSchema } from '@/schemas/tag'
+import { validate } from '@/middleware/zod.middleware'
 
-export const tagsRouter = new Hono()
+export const app = new Hono()
 
 // Get all tags (optionally filter by spaceId)
-tagsRouter.get('/', async (c) => {
+app.get('/', async (c) => {
 	const spaceId = c.req.query('spaceId')
 	const where = spaceId ? { spaceId: Number(spaceId) } : {}
 	const tags = await prisma.tag.findMany({ where })
@@ -16,7 +15,7 @@ tagsRouter.get('/', async (c) => {
 })
 
 // Get a single tag by ID
-tagsRouter.get('/:id', async (c) => {
+app.get('/:id', async (c) => {
 	const id = Number(c.req.param('id'))
 	const tag = await prisma.tag.findUnique({ where: { id } })
 	if (!tag) throw new HTTPException(404, { message: `Tag ${id} not found` })
@@ -24,7 +23,7 @@ tagsRouter.get('/:id', async (c) => {
 })
 
 // Create a new tag
-tagsRouter.post('/', validate(createTagSchema), async (c) => {
+app.post('/', validate(createTagSchema), async (c) => {
 	const { name, color, spaceId } = c.req.valid('json')
 	const tag = await prisma.tag.create({
 		data: { name, color, spaceId },
@@ -33,7 +32,7 @@ tagsRouter.post('/', validate(createTagSchema), async (c) => {
 })
 
 // Update a tag
-tagsRouter.put('/:id', validate(updateTagSchema), async (c) => {
+app.put('/:id', validate(updateTagSchema), async (c) => {
 	const id = Number(c.req.param('id'))
 	const { name, color } = c.req.valid('json')
 	try {
@@ -48,7 +47,7 @@ tagsRouter.put('/:id', validate(updateTagSchema), async (c) => {
 })
 
 // Delete a tag
-tagsRouter.delete('/:id', async (c) => {
+app.delete('/:id', async (c) => {
 	const id = Number(c.req.param('id'))
 	try {
 		await prisma.tag.delete({ where: { id } })
@@ -57,3 +56,5 @@ tagsRouter.delete('/:id', async (c) => {
 		throw new HTTPException(404, { message: `Tag ${id} not found or delete failed` })
 	}
 })
+
+export default app

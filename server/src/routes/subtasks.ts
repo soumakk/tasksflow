@@ -1,13 +1,13 @@
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import prisma from '../lib/prisma'
-import { validate } from '../lib/zod'
-import { createSubTaskSchema, updateSubTaskSchema } from '../schemas/subtask'
+import prisma from '@/lib/prisma'
+import { createSubTaskSchema, updateSubTaskSchema } from '@/schemas/subtask'
+import { validate } from '@/middleware/zod.middleware'
 
-export const subtasksRouter = new Hono()
+export const app = new Hono()
 
 // Get all subtasks for a task
-subtasksRouter.get('/', async (c) => {
+app.get('/', async (c) => {
 	const taskId = c.req.query('taskId')
 	if (!taskId) throw new HTTPException(400, { message: 'taskId is required' })
 	const subtasks = await prisma.subTask.findMany({
@@ -18,7 +18,7 @@ subtasksRouter.get('/', async (c) => {
 })
 
 // Get a single subtask by ID
-subtasksRouter.get('/:id', async (c) => {
+app.get('/:id', async (c) => {
 	const id = Number(c.req.param('id'))
 	const subtask = await prisma.subTask.findUnique({ where: { id } })
 	if (!subtask) throw new HTTPException(404, { message: 'Subtask not found' })
@@ -26,7 +26,7 @@ subtasksRouter.get('/:id', async (c) => {
 })
 
 // Create a new subtask
-subtasksRouter.post('/', validate(createSubTaskSchema), async (c) => {
+app.post('/', validate(createSubTaskSchema), async (c) => {
 	const { title, completed = false, taskId } = c.req.valid('json')
 	// Validate parent task exists
 	const task = await prisma.task.findUnique({ where: { id: taskId } })
@@ -39,7 +39,7 @@ subtasksRouter.post('/', validate(createSubTaskSchema), async (c) => {
 })
 
 // Update a subtask
-subtasksRouter.put('/:id', validate(updateSubTaskSchema), async (c) => {
+app.put('/:id', validate(updateSubTaskSchema), async (c) => {
 	const id = Number(c.req.param('id'))
 	const { title, completed } = c.req.valid('json')
 	const data: any = {}
@@ -58,7 +58,7 @@ subtasksRouter.put('/:id', validate(updateSubTaskSchema), async (c) => {
 })
 
 // Delete a subtask
-subtasksRouter.delete('/:id', async (c) => {
+app.delete('/:id', async (c) => {
 	const id = Number(c.req.param('id'))
 	try {
 		await prisma.subTask.delete({ where: { id } })
@@ -67,3 +67,5 @@ subtasksRouter.delete('/:id', async (c) => {
 		throw new HTTPException(404, { message: 'Subtask not found or delete failed' })
 	}
 })
+
+export default app

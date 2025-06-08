@@ -1,13 +1,13 @@
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import prisma from '../lib/prisma'
-import { validate } from '../lib/zod'
-import { createTaskSchema, updateTaskSchema } from '../schemas/task'
+import prisma from '@/lib/prisma'
+import { createTaskSchema, updateTaskSchema } from '@/schemas/task'
+import { validate } from '@/middleware/zod.middleware'
 
-export const tasksRouter = new Hono()
+export const app = new Hono()
 
 // Get all tasks (optionally filter by spaceId or statusId)
-tasksRouter.get('/', async (c) => {
+app.get('/', async (c) => {
 	const spaceId = c.req.query('spaceId')
 	const statusId = c.req.query('statusId')
 	const where: any = {}
@@ -26,7 +26,7 @@ tasksRouter.get('/', async (c) => {
 })
 
 // Get a single task by ID
-tasksRouter.get('/:id', async (c) => {
+app.get('/:id', async (c) => {
 	const id = Number(c.req.param('id'))
 	const task = await prisma.task.findUnique({
 		where: { id },
@@ -40,7 +40,7 @@ tasksRouter.get('/:id', async (c) => {
 })
 
 // Create a new task (with tags)
-tasksRouter.post('/', validate(createTaskSchema), async (c) => {
+app.post('/', validate(createTaskSchema), async (c) => {
 	const { title, description, priority, due_date, statusId, spaceId, tagIds } =
 		c.req.valid('json')
 	// Ensure referenced status and space exist
@@ -71,7 +71,7 @@ tasksRouter.post('/', validate(createTaskSchema), async (c) => {
 })
 
 // Update a task (including tags)
-tasksRouter.put('/:id', validate(updateTaskSchema), async (c) => {
+app.put('/:id', validate(updateTaskSchema), async (c) => {
 	const id = Number(c.req.param('id'))
 	const { title, description, priority, due_date, statusId, tagIds } = c.req.valid('json')
 	// Prepare update data
@@ -101,7 +101,7 @@ tasksRouter.put('/:id', validate(updateTaskSchema), async (c) => {
 })
 
 // Delete a task
-tasksRouter.delete('/:id', async (c) => {
+app.delete('/:id', async (c) => {
 	const id = Number(c.req.param('id'))
 	try {
 		await prisma.task.delete({ where: { id } })
@@ -110,3 +110,5 @@ tasksRouter.delete('/:id', async (c) => {
 		throw new HTTPException(404, { message: 'Task not found or delete failed' })
 	}
 })
+
+export default app

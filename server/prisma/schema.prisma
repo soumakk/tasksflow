@@ -16,6 +16,25 @@ datasource db {
   directUrl = env("DIRECT_URL")
 }
 
+model User {
+  id         Int      @id @default(autoincrement())
+  email      String   @unique
+  name       String
+  password   String
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+  tokens     Token[]
+}
+
+model Token {
+  id         Int      @id @default(autoincrement())
+  token      String   @unique
+  userId     Int
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  created_at DateTime @default(now())
+  expires_at DateTime
+}
+
 model Space {
   id    Int     @id @default(autoincrement())
   title String

@@ -1,13 +1,13 @@
 import { Hono } from 'hono'
 import { HTTPException } from 'hono/http-exception'
-import prisma from '../lib/prisma'
-import { createSpaceSchema, updateSpaceSchema } from '../schemas/space'
-import { validate } from '../lib/zod'
+import prisma from '@/lib/prisma'
+import { createSpaceSchema, updateSpaceSchema } from '@/schemas/space'
+import { validate } from '@/middleware/zod.middleware'
 
-export const spacesRouter = new Hono()
+const app = new Hono()
 
 // Get all spaces
-spacesRouter.get('/', async (c) => {
+app.get('/', async (c) => {
 	const spaces = await prisma.space.findMany({
 		include: {
 			statuses: true,
@@ -20,7 +20,7 @@ spacesRouter.get('/', async (c) => {
 })
 
 // Get a single space by ID
-spacesRouter.get('/:id', async (c) => {
+app.get('/:id', async (c) => {
 	const id = Number(c.req.param('id'))
 	const space = await prisma.space.findUnique({
 		where: { id },
@@ -35,7 +35,7 @@ spacesRouter.get('/:id', async (c) => {
 })
 
 // Create a new space
-spacesRouter.post('/', validate(createSpaceSchema), async (c) => {
+app.post('/', validate(createSpaceSchema), async (c) => {
 	const { title, icon } = c.req.valid('json')
 	const space = await prisma.space.create({
 		data: { title, icon },
@@ -44,7 +44,7 @@ spacesRouter.post('/', validate(createSpaceSchema), async (c) => {
 })
 
 // Update a space
-spacesRouter.put('/:id', validate(updateSpaceSchema), async (c) => {
+app.put('/:id', validate(updateSpaceSchema), async (c) => {
 	const id = Number(c.req.param('id'))
 	const { title, icon } = c.req.valid('json')
 	try {
@@ -59,7 +59,7 @@ spacesRouter.put('/:id', validate(updateSpaceSchema), async (c) => {
 })
 
 // Delete a space
-spacesRouter.delete('/:id', async (c) => {
+app.delete('/:id', async (c) => {
 	const id = Number(c.req.param('id'))
 	try {
 		await prisma.space.delete({ where: { id } })
@@ -68,3 +68,5 @@ spacesRouter.delete('/:id', async (c) => {
 		throw new HTTPException(404, { message: 'Space not found or delete failed' })
 	}
 })
+
+export default app

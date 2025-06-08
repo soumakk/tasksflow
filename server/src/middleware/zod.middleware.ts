@@ -1,7 +1,7 @@
 import { zValidator } from '@hono/zod-validator'
 import { ZodError, ZodSchema } from 'zod'
 
-export function formatZodError(error: ZodError) {
+function formatZodError(error: ZodError) {
 	return error.issues.map((issue) => ({
 		path: issue.path.join('.'),
 		message: issue.message,
