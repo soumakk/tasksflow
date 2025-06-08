@@ -20,6 +20,9 @@ model Space {
   title String
   icon  String?
 
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
   statuses Status[]
   tags     Tag[]
   tasks    Task[]
@@ -32,6 +35,9 @@ model Task {
   priority    Priority
   due_date    DateTime
 
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
   status   Status @relation(fields: [statusId], references: [id])
   statusId Int
 
@@ -40,8 +46,7 @@ model Task {
   space   Space @relation(fields: [spaceId], references: [id])
   spaceId Int
 
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
+  subTasks SubTask[]
 }
 
 model SubTask {
@@ -51,6 +56,9 @@ model SubTask {
 
   created_at DateTime @default(now())
   updated_at DateTime @updatedAt
+
+  task   Task @relation(fields: [taskId], references: [id])
+  taskId Int
 }
 
 model Status {
