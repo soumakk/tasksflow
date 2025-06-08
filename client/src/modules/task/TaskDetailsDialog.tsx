@@ -10,6 +10,7 @@ import TagsField from '../fields/TagsField'
 import TextField from '../fields/TextField'
 import TextareaField from '../fields/TextareaField'
 import SubTasksList from './SubTasksList'
+import { Calendar1, Disc, Flag, Tag } from 'lucide-react'
 
 export default function TaskDetailsDialog({
 	open,
@@ -29,39 +30,27 @@ export default function TaskDetailsDialog({
 
 	return (
 		<Dialog open={open} onOpenChange={onClose}>
-			<DialogContent className="overflow-hidden max-w-3xl sm:rounded-3xl p-6">
+			<DialogContent className="overflow-hidden max-w-xl sm:rounded-3xl p-6">
 				<button className="absolute"></button>
 
-				<div className="grid grid-cols-1 sm:grid-cols-5 gap-8">
-					<div className="col-span-3">
-						<div className="mb-3">
-							<TextField
-								className="text-xl font-medium w-full focus:outline-2 outline-primary p-2 rounded-sm"
-								placeholder="Untitled"
-								defaultValue={task.title}
-								onSave={(value) => {
-									updateCell(task?.id, 'title', value)
-								}}
-							/>
-						</div>
-						<div>
-							<TextareaField
-								initialValue={task.description}
-								onSave={(value) => {
-									updateCell(task?.id, 'description', value)
-								}}
-							/>
-						</div>
-
-						<SubTasksList task={task} />
+				<div className="">
+					<div className="mb-3">
+						<TextField
+							className="text-xl font-medium w-full focus:outline-2 outline-primary p-2 rounded-sm"
+							placeholder="Untitled"
+							defaultValue={task.title}
+							onSave={(value) => {
+								updateCell(task?.id, 'title', value)
+							}}
+						/>
 					</div>
 
-					<div className="col-span-2 flex flex-col gap-3 sm:gap-6">
-						<div className="flex flex-col gap-2 items-start">
-							<label className="text-muted-foreground text-xs uppercase font-medium">
-								Due date
-							</label>
-
+					<div className="grid grid-cols-3 gap-2 items-center">
+						<label className="text-muted-foreground text-xs font-medium flex items-center gap-2">
+							<Calendar1 className="h-4 w-4 text-muted-foreground" />
+							Due date
+						</label>
+						<div className="col-span-2">
 							<DateField
 								initialValue={task?.due_date}
 								onSave={(value) => {
@@ -70,10 +59,11 @@ export default function TaskDetailsDialog({
 							/>
 						</div>
 
-						<div className="flex flex-col gap-2 items-start">
-							<label className="text-muted-foreground text-xs uppercase font-medium">
-								Status
-							</label>
+						<label className="text-muted-foreground text-xs flex items-center gap-2 font-medium">
+							<Disc className="h-4 w-4" />
+							Status
+						</label>
+						<div className="col-span-2">
 							<StatusField
 								onSave={(value) => {
 									updateCell(task?.id, 'status_id', value)
@@ -83,10 +73,11 @@ export default function TaskDetailsDialog({
 							/>
 						</div>
 
-						<div className="flex flex-col gap-2 items-start">
-							<label className="text-muted-foreground text-xs uppercase font-medium">
-								Priority
-							</label>
+						<label className="text-muted-foreground text-xs flex items-center gap-2 font-medium">
+							<Flag className="h-4 w-4" />
+							Priority
+						</label>
+						<div className="col-span-2">
 							<PriorityField
 								onSave={(value) => {
 									updateCell(task?.id, 'priority', value)
@@ -95,10 +86,11 @@ export default function TaskDetailsDialog({
 							/>
 						</div>
 
-						<div className="flex flex-col gap-2 items-start">
-							<label className="text-muted-foreground text-xs uppercase font-medium">
-								Tags
-							</label>
+						<label className="text-muted-foreground text-xs flex items-center gap-2 font-medium">
+							<Tag className="h-4 w-4" />
+							Tags
+						</label>
+						<div className="col-span-2">
 							<TagsField
 								onSave={(value) => {
 									updateCell(task?.id, 'tag_ids', value)
@@ -108,6 +100,20 @@ export default function TaskDetailsDialog({
 							/>
 						</div>
 					</div>
+
+					<div className="my-3 flex flex-col gap-3">
+						<label className="text-muted-foreground text-xs font-medium">
+							Description
+						</label>
+						<TextareaField
+							initialValue={task.description}
+							onSave={(value) => {
+								updateCell(task?.id, 'description', value)
+							}}
+						/>
+					</div>
+
+					<SubTasksList task={task} />
 				</div>
 			</DialogContent>
 		</Dialog>

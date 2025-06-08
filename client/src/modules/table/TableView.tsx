@@ -3,7 +3,7 @@ import { db } from '@/lib/db'
 import useFilteredTasks from '@/lib/hooks/useFilteredTasks'
 import { ColumnDef } from '@tanstack/react-table'
 import dayjs from 'dayjs'
-import { Calendar1, Flag, Hourglass, Tag, Trash2, Type } from 'lucide-react'
+import { Calendar1, Disc, Flag, Hourglass, Tag, Trash2, Type } from 'lucide-react'
 import { useState } from 'react'
 import { formatDate } from '../../lib/utils'
 import { IStatus, ITag, ITask, TaskPriority } from '../../types/tasks'
@@ -116,7 +116,12 @@ export default function TableView({
 		},
 		{
 			accessorKey: 'status_id',
-			header: 'Status',
+			header: () => (
+				<p className="flex gap-2 items-center">
+					<Disc className="h-4 w-4" />
+					<span>Status</span>
+				</p>
+			),
 			cell: ({ getValue, row, column }) => {
 				const statusId = getValue() as string
 				return (
@@ -132,44 +137,6 @@ export default function TableView({
 			},
 		},
 
-		// {
-		// 	accessorKey: 'priority',
-		// 	header: () => (
-		// 		<p className="flex gap-2 items-center">
-		// 			<Flag className="h-4 w-4" />
-		// 			<span>Priority</span>
-		// 		</p>
-		// 	),
-		// 	cell: ({ getValue, row, column }) => {
-		// 		const priority = getValue() as TaskPriority
-		// 		const selectedLabel = PriorityOptions?.find((opt) => opt.value === priority)?.label
-
-		// 		if (!priority) {
-		// 			return null
-		// 		}
-		// 		return (
-		// 			<button className="w-full h-full flex items-center gap-2 px-3 cursor-pointer data-[state=open]:outline-2 outline-primary">
-		// 				<PriorityFlag priority={priority} />
-		// 				<span>{selectedLabel}</span>
-		// 			</button>
-		// 		)
-		// 	},
-		// },
-		// {
-		// 	accessorKey: 'status_id',
-		// 	header: () => (
-		// 		<p className="flex gap-2 items-center">
-		// 			<Disc className="h-4 w-4" />
-		// 			<span>Status</span>
-		// 		</p>
-		// 	),
-		// 	cell: ({ getValue, row, column }) => {
-		// 		const statusId = getValue() as string
-		// 		const statusInfo = statusList?.find((opt) => opt.id === statusId)
-
-		// 		return <StatusBadge status={statusInfo} />
-		// 	},
-		// },
 		{
 			accessorKey: 'due_date',
 			header: () => (
@@ -209,23 +176,6 @@ export default function TableView({
 					/>
 				)
 			},
-			// cell: ({ getValue, row, column }) => {
-			// 	const tagIds = getValue() as string[]
-			// 	if (!tagIds?.length) return null
-			// 	const tags = tagsList?.filter((opt) => tagIds?.includes(opt.id))
-			// 	return tags ? (
-			// 		<div
-			// 			className="h-full w-full px-3 flex items-center"
-			// 			onDoubleClick={() => setEditingCell({ row: row.id, col: column.id })}
-			// 		>
-			// 			<div className="flex gap-1">
-			// 				{tags?.slice(0, 3)?.map((tag) => (
-			// 					<TagBadge tag={tag} />
-			// 				))}
-			// 			</div>
-			// 		</div>
-			// 	) : null
-			// },
 		},
 
 		{

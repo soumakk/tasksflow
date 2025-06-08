@@ -70,7 +70,7 @@ export default function StatusField({
 	return (
 		<Popover modal={true} open={open} onOpenChange={setOpen}>
 			<PopoverTrigger asChild>
-				<button className="flex w-full bg-muted rounded-sm border border-border items-center gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
+				<button className="flex w-full hover:bg-muted rounded-sm items-center gap-2 p-1 cursor-pointer data-[state=open]:outline-2 outline-primary">
 					{currentStatus ? <StatusBadge status={statusInfo} /> : null}
 				</button>
 			</PopoverTrigger>

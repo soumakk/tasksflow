@@ -35,7 +35,7 @@ export default function SubTasksList({ task }: { task: ITask }) {
 	}
 
 	return (
-		<div className="py-5">
+		<div className="my-4">
 			<div className="flex items-center justify-between py-2 border-b border-border">
 				<label className="text-muted-foreground text-xs uppercase font-medium">
 					Sub Tasks
