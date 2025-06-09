@@ -1,5 +1,5 @@
 // frontend/src/contexts/AuthContext.tsx
-import { getUrl } from '@/services/api'
+import { getUrl } from '@/lib/fetch'
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react'
 import { useNavigate } from 'react-router'
 

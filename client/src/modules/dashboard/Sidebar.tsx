@@ -15,6 +15,9 @@ import {
 	SidebarRail,
 } from '@/components/ui/sidebar'
 import { UserNav } from './UserNav'
+import { useAuth } from '@/context/AuthContext'
+import { useSpaces } from '@/services/queries'
+import { Link } from 'react-router'
 
 const items = [
 	{
@@ -28,6 +31,11 @@ const items = [
 ]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+	const { user } = useAuth()
+	const { data: spaces } = useSpaces()
+
+	console.log(spaces)
+
 	return (
 		<Sidebar {...props}>
 			<SidebarHeader>
@@ -52,12 +60,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					<SidebarGroupLabel>Spaces</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							{items?.map((item) => (
-								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton>
-										<ScrollText className="h-5 w-5" />
-										{item.title}
-									</SidebarMenuButton>
+							{spaces?.map((space) => (
+								<SidebarMenuItem key={space.id}>
+									<Link to={`/${space.id}`}>
+										<SidebarMenuButton>
+											<ScrollText className="h-5 w-5" />
+											{space.title}
+										</SidebarMenuButton>
+									</Link>
 								</SidebarMenuItem>
 							))}
 						</SidebarMenu>
@@ -69,8 +79,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 			<SidebarFooter>
 				<UserNav
 					user={{
-						email: 'soumak@gmail.com',
-						name: 'Soumak',
+						email: user?.email,
+						name: user?.name,
 						avatar: '',
 					}}
 				/>

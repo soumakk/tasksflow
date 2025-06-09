@@ -3,17 +3,13 @@ import { HTTPException } from 'hono/http-exception'
 import prisma from '@/lib/prisma'
 import { createSpaceSchema, updateSpaceSchema } from '@/schemas/space'
 import { validate } from '@/middleware/zod.middleware'
+import { authMiddleware } from '@/middleware/auth.middleware'
 
 const app = new Hono()
 
 // Get all spaces
-app.get('/', async (c) => {
+app.get('/', authMiddleware, async (c) => {
 	const spaces = await prisma.space.findMany({
-		include: {
-			statuses: true,
-			tags: true,
-			tasks: true,
-		},
 		orderBy: { id: 'asc' },
 	})
 	return c.json(spaces)

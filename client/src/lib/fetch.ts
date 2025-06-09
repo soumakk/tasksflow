@@ -4,16 +4,17 @@ export function getUrl(url: string) {
 	return `${API_URL}${url}`
 }
 
-export async function authFetch<T>(url: string, options: RequestInit = {}) {
+export async function authFetch<T>(url: string, body?: object, options: RequestInit = {}) {
 	const headers = {
 		'Content-Type': 'application/json',
-		// Authorization: `Bearer ${token}`,
 		...options.headers,
 	}
 
-	return fetch(`${API_URL}${url}`, {
+	return fetch(getUrl(url), {
 		...options,
 		headers,
+		credentials: 'include',
+		body: JSON.stringify(body),
 	}).then(async (response) => {
 		if (!response.ok) {
 			const errorData = await response.json()
