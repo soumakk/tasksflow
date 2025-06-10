@@ -3,58 +3,65 @@ import { HTTPException } from 'hono/http-exception'
 import prisma from '@/lib/prisma'
 import { createTagSchema, updateTagSchema } from '@/schemas/tag'
 import { validate } from '@/middleware/zod.middleware'
+import { authMiddleware } from '@/middleware/auth.middleware'
+import { AuthVariables } from '@/schemas/auth'
 
-export const app = new Hono()
+const app = new Hono<{ Variables: AuthVariables }>()
 
-// Get all tags (optionally filter by spaceId)
-app.get('/', async (c) => {
-	const spaceId = c.req.query('spaceId')
-	const where = spaceId ? { spaceId: Number(spaceId) } : {}
-	const tags = await prisma.tag.findMany({ where })
+app.get('/', authMiddleware, async (c) => {
+	const user = c.get('user')
+	const tags = await prisma.tag.findMany({
+		where: { userId: user.id },
+		orderBy: { id: 'asc' },
+	})
 	return c.json(tags)
 })
 
-// Get a single tag by ID
-app.get('/:id', async (c) => {
+app.get('/:id', authMiddleware, async (c) => {
+	const user = c.get('user')
 	const id = Number(c.req.param('id'))
-	const tag = await prisma.tag.findUnique({ where: { id } })
-	if (!tag) throw new HTTPException(404, { message: `Tag ${id} not found` })
+	const tag = await prisma.tag.findUnique({
+		where: { id },
+	})
+	if (!tag || tag.userId !== user.id) {
+		throw new HTTPException(404, { message: 'Tag not found' })
+	}
 	return c.json(tag)
 })
 
-// Create a new tag
-app.post('/', validate(createTagSchema), async (c) => {
-	const { name, color, spaceId } = c.req.valid('json')
+app.post('/', authMiddleware, validate(createTagSchema), async (c) => {
+	const user = c.get('user')
+	const { name, color } = c.req.valid('json')
 	const tag = await prisma.tag.create({
-		data: { name, color, spaceId },
+		data: { name, color, userId: user.id },
 	})
 	return c.json(tag, 201)
 })
 
-// Update a tag
-app.put('/:id', validate(updateTagSchema), async (c) => {
+app.put('/:id', authMiddleware, validate(updateTagSchema), async (c) => {
+	const user = c.get('user')
 	const id = Number(c.req.param('id'))
 	const { name, color } = c.req.valid('json')
-	try {
-		const tag = await prisma.tag.update({
-			where: { id },
-			data: { name, color },
-		})
-		return c.json(tag)
-	} catch (err) {
-		throw new HTTPException(404, { message: `Tag ${id} not found or update failed` })
+	const tag = await prisma.tag.findUnique({ where: { id } })
+	if (!tag || tag.userId !== user.id) {
+		throw new HTTPException(404, { message: 'Tag not found or update failed' })
 	}
+	const updated = await prisma.tag.update({
+		where: { id },
+		data: { name, color },
+	})
+	return c.json(updated)
 })
 
-// Delete a tag
-app.delete('/:id', async (c) => {
+app.delete('/:id', authMiddleware, async (c) => {
+	const user = c.get('user')
 	const id = Number(c.req.param('id'))
-	try {
-		await prisma.tag.delete({ where: { id } })
-		return c.json({ message: 'Tag deleted' })
-	} catch (err) {
-		throw new HTTPException(404, { message: `Tag ${id} not found or delete failed` })
+	const tag = await prisma.tag.findUnique({ where: { id } })
+	if (!tag || tag.userId !== user.id) {
+		throw new HTTPException(404, { message: 'Tag not found or delete failed' })
 	}
+	await prisma.tag.delete({ where: { id } })
+	return c.json({ message: 'Tag deleted' })
 })
 
 export default app

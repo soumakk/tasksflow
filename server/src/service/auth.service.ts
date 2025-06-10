@@ -1,4 +1,3 @@
-// src/services/auth.service.ts
 import * as bcrypt from 'bcryptjs'
 import * as jwt from 'jsonwebtoken'
 import prisma from '@/lib/prisma'
@@ -50,7 +49,7 @@ export class AuthService {
 			data: {
 				token,
 				userId: newUser.id,
-				expires_at: expiresAt,
+				expiresAt: expiresAt,
 			},
 		})
 
@@ -91,7 +90,7 @@ export class AuthService {
 			data: {
 				token,
 				userId: user.id,
-				expires_at: expiresAt,
+				expiresAt: expiresAt,
 			},
 		})
 
@@ -121,7 +120,7 @@ export class AuthService {
 			include: { user: true },
 		})
 
-		if (!tokenRecord || tokenRecord.expires_at < new Date()) {
+		if (!tokenRecord || tokenRecord.expiresAt < new Date()) {
 			return null
 		}
 
@@ -132,7 +131,7 @@ export class AuthService {
 		// Clean up expired tokens
 		await prisma.token.deleteMany({
 			where: {
-				expires_at: {
+				expiresAt: {
 					lt: new Date(),
 				},
 			},
