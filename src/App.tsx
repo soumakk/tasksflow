@@ -1,24 +1,22 @@
 import TableView from '@/modules/table/TableView'
 import dayjs from 'dayjs'
 import { useAtom, useSetAtom } from 'jotai'
-import { ArrowUpDown, Columns3, ListFilter, Loader, PlusIcon, Table } from 'lucide-react'
+import { Columns3, Loader, PlusIcon, Table } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import { Button } from './components/ui/button'
 import { Tabs, TabsContent, TabsList, TabsTrigger } from './components/ui/tabs'
-import { boardColumnsAtom, currentTabAtom, isFiltersOpenAtom } from './lib/atoms'
+import { boardColumnsAtom, currentTabAtom } from './lib/atoms'
 import { db } from './lib/db'
 import { useStatus, useTags, useTasks } from './lib/hooks/dexie'
-import { cn, generateId } from './lib/utils'
+import { generateId } from './lib/utils'
 import BoardView from './modules/board/BoardView'
 import TasksFilters from './modules/table/TasksFilters'
 import TaskDetailsDialog from './modules/task/TaskDetailsDialog'
 import ThemeSwitch from './modules/ThemeSwitch'
 import Title from './modules/Title'
 import { ITask, TaskPriority } from './types/tasks'
-import SortFilter from './modules/table/SortFilter'
 
 function App() {
-	const [isFiltersOpen, setIsFiltersOpen] = useAtom(isFiltersOpenAtom)
 	const [currentTab, setCurrentTab] = useAtom(currentTabAtom)
 	const [selectedTaskId, setSelectedTaskId] = useState(null)
 
@@ -61,10 +59,22 @@ function App() {
 
 	return (
 		<>
-			<div className="relative h-full max-w-5xl mx-auto flex flex-col overflow-hidden">
+			<div className="relative max-w-5xl mx-auto flex flex-col overflow-hidden">
 				<div className="flex justify-between items-center px-4 py-4">
 					<Title />
-					<ThemeSwitch />
+
+					<div className="flex gap-3 items-center">
+						<ThemeSwitch />
+
+						<Button
+							size="sm"
+							className="rounded-full px-3 gap-1"
+							onClick={handleNewTask}
+						>
+							<PlusIcon className="h-3 w-3" />
+							<span>Add task</span>
+						</Button>
+					</div>
 				</div>
 
 				<Tabs
@@ -85,7 +95,8 @@ function App() {
 						</TabsList>
 
 						<div className="flex items-center gap-2">
-							{/* {currentTab === 'table' ? <SortFilter /> : null} */}
+							<TasksFilters />
+							{/* {currentTab === 'table' ? <SortFilter /> : null}
 
 							<button
 								onClick={() => setIsFiltersOpen((o) => !o)}
@@ -96,20 +107,9 @@ function App() {
 							>
 								<ListFilter className="h-4 w-4" />
 								<span>Filters</span>
-							</button>
-
-							<Button
-								size="sm"
-								className="rounded-full px-3 gap-1"
-								onClick={handleNewTask}
-							>
-								<PlusIcon className="h-3 w-3" />
-								<span>Add task</span>
-							</Button>
+							</button> */}
 						</div>
 					</div>
-
-					{isFiltersOpen && <TasksFilters />}
 
 					{isContentLoading ? (
 						<div className="grid place-content-center py-32">
